@@ -1,8 +1,8 @@
 [package]
 name = "genshin-loader"
 version = "0.0.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "GUI Application to manage your GIMI Mods, easily manage your fps unlocking"
+authors = ["Mufaro"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
