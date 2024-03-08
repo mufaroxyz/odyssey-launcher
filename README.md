@@ -1,5 +1,9 @@
 # Genshin Loader
 
+## Download
+
+WIP
+
 ## Development
 
 This project was bootstrapped with Tauri. Uses Typescript + Preact + Rust. 
