@@ -1,6 +1,6 @@
-import { render } from "preact";
 import "./styles.css";
-import "./styles/button.css"
+import "./styles/button.css";
 import Router from "./router";
+import { createRoot } from "react-dom/client";
 
-render(<Router />, document.getElementById("root")!);
+createRoot(document.getElementById("root")!).render(<Router />);

@@ -1,30 +1,46 @@
-import { invoke } from "@tauri-apps/api/tauri";
-import { useEffect } from "preact/hooks";
-import { Button } from "../components/ui/button";
+import { useEffect, useState } from "react";
+import { isGameInstalled } from "../lib/genshin_lib";
+import KvSettings from "../lib/store";
+import MissingGameInstallation from "../components/core/missing-game-installation";
+import AppRest from "../components/core/app-rest";
+import { scrapeBanner } from "../lib/utils";
 
 function App() {
-  async function greet() {
-    await invoke("hello_world");
-  }
+  const [dialogOpened, setDialogOpened] = useState({
+    missingGameInstallation: false,
+  });
 
   useEffect(() => {
-    greet();
-  }, [])
+    const makeSureGameIsInstalled = async () => {
+      const isInstalled = await isGameInstalled();
+
+      if (!isInstalled) {
+        await KvSettings.set("genshinImpactData", {
+          path: "",
+        });
+        setDialogOpened({
+          missingGameInstallation: true,
+        });
+      }
+    };
+
+    if (!dialogOpened.missingGameInstallation) {
+      makeSureGameIsInstalled();
+    }
+  }, [dialogOpened.missingGameInstallation]);
 
   return (
-    <div class={"flex flex-col h-full justify-between"}>
-      <div class={"flex-1 p-2"}>
-        <h3 class="bg-none text-white">Genshin Impact{" "} 
-          <span class="text-accent">
-            Loader
-          </span>
-        </h3>
-      </div>
-      <div class={"p-4 flex gap-2 self-end"}>
-        <Button variant="tonal" label="Greet" class={"!w-fit"} onClick={greet}>Configure</Button>
-        <Button variant="filled" label="Greet" class={"!w-fit"} onClick={greet}>Launch Game</Button>
-      </div>
-    </div>
+    <>
+      <MissingGameInstallation
+        open={dialogOpened.missingGameInstallation}
+        setOpen={() => {
+          setDialogOpened({
+            missingGameInstallation: !dialogOpened.missingGameInstallation,
+          });
+        }}
+      />
+      {!dialogOpened.missingGameInstallation && <AppRest />}
+    </>
   );
 }
 
