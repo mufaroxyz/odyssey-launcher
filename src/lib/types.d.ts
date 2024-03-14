@@ -1,5 +1,19 @@
 type Path = string;
 
+type FilterDeepNonObjects = {
+  [K in keyof T]: T[K] extends object ? never : K;
+};
+
+export interface ApplicationData {
+  applicationSettings: ApplicationSettings;
+  localGameManifest: LocalGameManifest;
+}
+
+export interface ClearedApplicationData {
+  applicationSettings: Pick<ApplicationSettings, keyof ApplicationSettings>;
+  localGameManifest: Pick<LocalGameManifest, keyof LocalGameManifest>;
+}
+
 export interface GenshinImpactData {
   path: Path;
 }

@@ -1,10 +1,11 @@
 import { Store } from "./__STORE";
 import { ApplicationSettings } from "./types";
 
-type SettingsKeys = keyof ApplicationSettings;
-type SettingsTypeAccessor = ApplicationSettings[keyof ApplicationSettings];
+export type SettingsKeys = keyof ApplicationSettings;
+export type SettingsTypeAccessor =
+  ApplicationSettings[keyof ApplicationSettings];
 
-const store = new Store(".settings.dat");
+const store = new Store("genshin-loader-3.settings.dat");
 
 export default abstract class KvSettings {
   static async set<T extends SettingsTypeAccessor>(
@@ -32,8 +33,8 @@ export default abstract class KvSettings {
   }
 
   static async createOrGetAll(): Promise<ApplicationSettings> {
-    const settings = await store.entries();
-    if (settings.length === 0) {
+    const settings = await KvSettings.getAll();
+    if (Object.keys(settings).length === 0) {
       await KvSettings.set("genshinImpactData", {
         path: "",
       });

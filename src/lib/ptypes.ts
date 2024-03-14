@@ -21,12 +21,9 @@ export interface TauriResponse {
     | {
         error: string;
       };
-  ["TauriRoutes.FetchLocalManifest"]:
-    | {
-        path: string;
-        manifest: LocalGameManifest;
-      }
-    | {
-        error: string;
-      };
+  ["TauriRoutes.FetchLocalManifest"]: {
+    path: string;
+    manifest: LocalGameManifest;
+    error?: never;
+  };
 }

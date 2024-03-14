@@ -4,6 +4,7 @@ import { TauriResponse, TauriRoutes } from "./ptypes";
 import { JSONInvoke } from "./utils";
 
 export async function fetchAllConfig(): Promise<ApplicationSettings> {
+  console.log("Fetching all config");
   return await KvSettings.createOrGetAll();
 }
 
