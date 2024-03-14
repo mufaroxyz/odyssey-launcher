@@ -1,6 +1,7 @@
 import { Button } from "../ui/button";
 import useApplicationStore from "../state/application-state";
 import LoadingScreen from "./loading-screen";
+import { invoke } from "@tauri-apps/api/tauri";
 
 export default function AppRest() {
   const { applicationSettings, localGameManifest } = useApplicationStore();
@@ -9,6 +10,13 @@ export default function AppRest() {
     applicationSettings,
     localGameManifest,
   };
+
+  async function startGame() {
+    console.log("Starting game...");
+    await invoke("start_game", {
+      path: applicationSettings.genshinImpactData.path,
+    });
+  }
 
   return (
     <>
@@ -45,7 +53,12 @@ export default function AppRest() {
           <Button variant="tonal" label="Greet" className={"!w-fit"}>
             Configure
           </Button>
-          <Button variant="filled" label="Greet" className={"!w-fit"}>
+          <Button
+            onClick={startGame}
+            variant="filled"
+            label="Greet"
+            className={"!w-fit"}
+          >
             Launch Game
           </Button>
         </div>

@@ -26,6 +26,8 @@ scraper = "0.19.0"
 base64 = "0.22.0"
 engine = "0.0.0"
 log = "0.4.21"
+discord-presence = "1.1.1"
+discord-rich-presence = "0.2.3"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
