@@ -30,7 +30,7 @@ impl<'a> DiscordRPC<'a> {
     }
 
     pub fn start(&mut self) {
-        let client_id = self.client_id.clone();
+        let client_id = self.client_id;
 
         let mut client = DiscordIpcClient::new(client_id as &str).expect("Failed to create client");
 

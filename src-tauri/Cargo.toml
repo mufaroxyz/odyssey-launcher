@@ -11,7 +11,7 @@ edition = "2021"
 tauri-build = { version = "1", features = [] }
 
 [dependencies]
-tauri = { version = "1", features = [
+tauri = { version = "1", features = [ "macos-private-api", "window-all",
   "system-tray",
   "dialog-all",
   "shell-open",
@@ -28,6 +28,8 @@ engine = "0.0.0"
 log = "0.4.21"
 discord-presence = "1.1.1"
 discord-rich-presence = "0.2.3"
+thiserror = "1.0.58"
+tokio = "1.36.0"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

@@ -2,7 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 interface ButtonProps {
-  variant: "filled" | "tonal" | "text" | "outlined";
+  variant: "filled" | "tonal" | "text" | "outlined" | "accent" | "dark";
+  acrylic?: boolean;
   icon?: React.ReactNode;
   href?: string;
   label?: string;
@@ -11,12 +12,16 @@ interface ButtonProps {
 
 export const Button: React.FC<
   ButtonProps & React.HTMLAttributes<HTMLButtonElement | HTMLAnchorElement>
-> = ({ href, variant, label, icon, children, onClick }) => {
+> = ({ href, variant, label, icon, children, acrylic, onClick }) => {
   if (href)
     return (
       <Link to={href} onClick={onClick}>
-        <span className={`button-${variant}`} aria-label={label}>
-          {icon && <img src={`/icons/${icon}`} alt={label} />}
+        <span
+          className={`button-${variant} ${acrylic && "button-style-acrylic"}`}
+          aria-label={label}
+        >
+          {/* {icon && <img src={`/icons/${icon}`} alt={label} />} */}
+          {icon && icon}
           {children}
         </span>
       </Link>
@@ -25,10 +30,11 @@ export const Button: React.FC<
   return (
     <button
       onClick={onClick}
-      className={`button-${variant}`}
+      className={`button-${variant} ${acrylic && "button-style-acrylic"}`}
       aria-label={label}
     >
-      {icon && <img src={`/icons/${icon}`} alt={label} />}
+      {/* {icon && <img src={`/icons/${icon}`} alt={label} />} */}
+      {icon && icon}
       {children}
     </button>
   );

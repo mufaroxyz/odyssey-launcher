@@ -5,6 +5,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::lib::discord_rpc::{DiscordRPC, DiscordRPCState};
 use discord_rich_presence::activity::{Activity, Assets};
+use lib::asset_manager::{AssetManager, AssetManagerState};
 use tauri::{
     CustomMenuItem, Manager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu,
     SystemTrayMenuItem,
@@ -28,6 +29,7 @@ fn main() {
         ));
 
     let discord_rpc = DiscordRPC::new();
+    let asset_manager = AssetManager::new();
 
     tauri::Builder::default()
         .system_tray(system_tray)
@@ -63,19 +65,20 @@ fn main() {
         })
         .plugin(tauri_plugin_store::Builder::default().build())
         .manage(DiscordRPCState(Arc::new(Mutex::new(discord_rpc))))
+        .manage(AssetManagerState(Arc::new(Mutex::new(asset_manager))))
         .invoke_handler(tauri::generate_handler![
             commands::hello_world::hello_world,
             commands::io::find_installation_path,
             commands::io::ensure_installation_path,
             commands::io::fetch_local_manifest,
-            commands::assets::scrape_banner,
-            commands::application_executor::start_game
+            commands::application_executor::start_game,
+            commands::assets::fetch_images
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
         .run(|app_handle, event| match event {
             RunEvent::Ready { .. } => {
-                let mut state = &app_handle.state::<DiscordRPCState>();
+                let state = &app_handle.state::<DiscordRPCState>();
                 let mut state = state.0.lock().unwrap();
 
                 state.start();
@@ -87,7 +90,7 @@ fn main() {
                     .details("Idle")
                     .assets(assets);
 
-                state.set_activity(activity);
+                state.set_activity(activity).expect("rpc");
             }
             RunEvent::ExitRequested { api, .. } => {
                 api.prevent_exit();

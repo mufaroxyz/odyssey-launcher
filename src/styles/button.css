@@ -8,7 +8,7 @@ button {
 a,
 button {
   min-width: max-content;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   text-decoration: none;
   color: var(--white);
   font-weight: 600;
@@ -23,17 +23,42 @@ button {
   user-select: none;
 }
 
+.button-style-acrylic {
+  backdrop-filter: blur(2px);
+}
+
+button.button-style-acrylic {
+  background-color: var(--button-acrylic) !important;
+}
+
+.button-dark.button-style-acrylic {
+  background-color: var(--button-dark-acrylic) !important;
+}
+
 .button-filled {
+  background-color: var(--button);
+  color: white;
+  border: 1px solid var(--button-hover);
+}
+.button-dark {
+  background-color: var(--button-dark);
+  color: white;
+  border: 1px solid var(--button-hover);
+}
+.button-accent {
   background-color: var(--accent-color);
-  color: var(--grey-four);
+  color: black;
+  border: 1px solid var(--accent-color);
 }
 .button-tonal {
   background-color: var(--grey-two);
 }
 
 .button-filled,
-.button-tonal {
-  padding: 12px 24px;
+.button-tonal,
+.button-dark,
+.button-accent {
+  padding: 8px 18px;
 }
 
 .button-text {
@@ -43,9 +68,8 @@ button {
   letter-spacing: 0.01rem;
 }
 
-button:hover,
 a:hover {
-  filter: brightness(85%);
+  background-color: var(--button-hover);
 }
 
 img {

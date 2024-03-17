@@ -1,41 +1,29 @@
-import { useEffect, useState } from "react";
-import { isGameInstalled } from "../lib/genshin_lib";
-import KvSettings from "../lib/store";
-import MissingGameInstallation from "../components/core/missing-game-installation";
-import AppRest from "../components/core/app-rest";
 import { ErrorBoundary } from "react-error-boundary";
+import LoadingScreen from "../components/core/loading-screen";
 import useApplicationStore from "../components/state/application-state";
-import { useShallow } from "zustand/react/shallow";
+import { invoke } from "@tauri-apps/api";
+import { Button } from "../components/ui/button";
+import { Download, SettingsIcon } from "lucide-react";
+import RoutePage from "../components/core/wrappers/route-page";
+import DebugOverlay from "../components/core/wrappers/debug-overlay";
+import ScrollingBanners from "../components/core/game-announcements/banners";
 
 function App() {
-  const { load } = useApplicationStore(
-    useShallow((state) => ({ load: state.REQUEST_STORE_UPDATE }))
-  );
-  const [dialogOpened, setDialogOpened] = useState({
-    missingGameInstallation: false,
-  });
+  const { applicationSettings, localGameManifest, images } =
+    useApplicationStore();
 
-  useEffect(() => {
-    const makeSureGameIsInstalled = async () => {
-      const isInstalled = await isGameInstalled();
+  const applicationData = {
+    applicationSettings,
+    localGameManifest,
+    images,
+  };
 
-      if (!isInstalled) {
-        await KvSettings.set("genshinImpactData", {
-          path: "",
-        });
-        setDialogOpened({
-          missingGameInstallation: true,
-        });
-        return;
-      }
-
-      load();
-    };
-
-    if (!dialogOpened.missingGameInstallation) {
-      makeSureGameIsInstalled();
-    }
-  }, [dialogOpened.missingGameInstallation]);
+  async function startGame() {
+    console.log("Starting game...");
+    await invoke("start_game", {
+      path: applicationSettings.genshinImpactData.path,
+    });
+  }
 
   return (
     <ErrorBoundary
@@ -49,15 +37,46 @@ function App() {
         </div>
       }
     >
-      <MissingGameInstallation
-        open={dialogOpened.missingGameInstallation}
-        setOpen={() => {
-          setDialogOpened({
-            missingGameInstallation: !dialogOpened.missingGameInstallation,
-          });
-        }}
-      />
-      {!dialogOpened.missingGameInstallation && <AppRest />}
+      <LoadingScreen />
+      <RoutePage
+        backgroundImage={applicationData.images.advertisement.splash}
+        className="flex-row"
+      >
+        <div className="flex-1 flex flex-col">
+          <ScrollingBanners />
+        </div>
+        {/* {applicationData && (
+          <DebugOverlay
+            objectData={{
+              gamePath:
+                applicationData.applicationSettings.genshinImpactData.path,
+              gameVersion: applicationData.localGameManifest.game_version,
+              pluginVersion: applicationData.localGameManifest.plugin_7_version,
+              channel: applicationData.localGameManifest.channel,
+            }}
+          />
+        )} */}
+        <div className={"p-4 flex gap-2 self-end"}>
+          <Button
+            variant="dark"
+            label="Greet"
+            className={"!w-fit"}
+            acrylic
+            icon={<SettingsIcon size={20} />}
+          >
+            Configure
+          </Button>
+          <Button
+            onClick={startGame}
+            variant="accent"
+            label="Greet"
+            icon={<Download size={20} />}
+            className={"!w-fit"}
+          >
+            Download Game
+          </Button>
+        </div>
+      </RoutePage>
     </ErrorBoundary>
   );
 }

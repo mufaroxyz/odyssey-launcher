@@ -51,14 +51,31 @@ async function fetchData(initial: boolean = false) {
     };
   });
 
+  let images = await invoke<TauriResponse["TauriRoutes.FetchImages"]>(
+    TauriRoutes.FetchImages
+  ).catch((err) => {
+    console.error(err);
+    return {
+      advertisement: {
+        splash: "",
+        icon: "",
+        icon_url: "",
+      },
+      banner: [],
+      error: "Failed to fetch images.",
+    };
+  });
+
   console.log("[FETCH_DATA] : ", {
     applicationSettings,
     localGameManifest: localGameManifest,
+    images,
   });
 
   return {
     applicationSettings,
     localGameManifest: localGameManifest.manifest,
+    images,
   };
 }
 
@@ -81,6 +98,14 @@ const useApplicationStore = create<ApplicationState>()((set, get) => ({
     plugin_7_version: "",
     sub_channel: "",
     uapc: "",
+  },
+  images: {
+    advertisement: {
+      splash: "",
+      icon: "",
+      icon_url: "",
+    },
+    banners: [],
   },
   isLoaded: false,
   _REQUEST_INITIAL_STORE_LOAD: async () => {

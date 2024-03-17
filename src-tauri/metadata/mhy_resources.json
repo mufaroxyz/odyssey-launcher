@@ -1,0 +1,4 @@
+{
+  "mhy_launcher_cdn_images": "https://sdk-os-static.mihoyo.com/hk4e_global/mdk/launcher/api/content?filter_adv=false&key=gcStgarh&language=en-us&launcher_id=10",
+  "mhy_launcher_cdn_game_resources": "https://sdk-os-static.mihoyo.com/hk4e_global/mdk/launcher/api/resource?channel_id=1&key=gcStgarh&launcher_id=10&sub_channel_id=0"
+}

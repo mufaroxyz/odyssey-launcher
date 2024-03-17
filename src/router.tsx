@@ -1,12 +1,20 @@
 import { HashRouter, Route, Routes } from "react-router-dom";
 import App from "./routes/app";
 import LoadingOverlay from "./components/layouts/loading-layout";
+import RootLayout from "./components/layouts/root-layout";
+import NotFound from "./routes/not-found";
+import AnimationLayout from "./components/layouts/animation-layout";
 
 export default () => (
   <HashRouter>
     <Routes>
-      <Route element={<LoadingOverlay />}>
-        <Route path="/" element={<App />} />
+      <Route element={<RootLayout />}>
+        <Route element={<AnimationLayout />}>
+          <Route element={<LoadingOverlay />}>
+            <Route path="/" element={<App />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Route>
       </Route>
     </Routes>
   </HashRouter>

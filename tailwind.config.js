@@ -1,18 +1,27 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./src/**/*.{tsx,ts}"
-  ],
+  content: ["./src/**/*.{tsx,ts}"],
   theme: {
     extend: {
       colors: {
-        "white": "var(--white)",
-        "accent": {
+        white: "var(--white)",
+        accent: {
           DEFAULT: "var(--accent-color)",
-          two: "var(--accent-color-two)", 
-          lowOpacity: "var(--accent-low-opacity)"
+          two: "var(--accent-color-two)",
+          lowOpacity: "var(--accent-low-opacity)",
         },
         "bg-color": "var(--bg-color)",
+        "sidebar-bg-color": "var(--sidebar-bg-color)",
+        button: {
+          DEFAULT: "var(--button)",
+          hover: "var(--button-hover)",
+          dark: "var(--button-on-light)",
+        },
+        input: {
+          DEFAULT: "var(--input)",
+          hover: "var(--input-hover)",
+          border: "var(--input-border)",
+        },
         "grey-one": "var(--grey-one)",
         "grey-two": "var(--grey-two)",
         "grey-three": "var(--grey-three)",
@@ -35,5 +44,4 @@ export default {
     },
   },
   plugins: [],
-}
-
+};
