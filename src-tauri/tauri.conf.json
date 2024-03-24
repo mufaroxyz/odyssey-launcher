@@ -10,6 +10,9 @@
     "version": "0.0.0"
   },
   "tauri": {
+    "updater": {
+      "active": false
+    },
     "macOSPrivateApi": true,
     "allowlist": {
       "all": false,
