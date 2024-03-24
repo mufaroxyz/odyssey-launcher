@@ -21,6 +21,8 @@ jobs:
 
       - name: setup bun
         uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: canary
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable

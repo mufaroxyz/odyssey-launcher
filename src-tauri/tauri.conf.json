@@ -7,9 +7,12 @@
   },
   "package": {
     "productName": "genshin-loader",
-    "version": "0.0.0"
+    "version": "0.0.1"
   },
   "tauri": {
+    "updater": {
+      "active": false
+    },
     "macOSPrivateApi": true,
     "allowlist": {
       "all": false,
