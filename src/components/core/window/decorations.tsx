@@ -1,3 +1,4 @@
+import { appWindow } from "@tauri-apps/api/window";
 import { X } from "lucide-react";
 
 export default function WindowDecorations() {
@@ -11,7 +12,10 @@ export default function WindowDecorations() {
       </div>
       <span className="text-sm text-white font-semibold">Genshin Loader</span>
       <div className="flex justify-end">
-        <button className=" inline-flex justify-center items-center w-[30px] h-[30px]">
+        <button
+          onClick={() => appWindow.close()}
+          className="inline-flex justify-center items-center w-[30px] h-[30px]"
+        >
           <X size={20} />
         </button>
       </div>
