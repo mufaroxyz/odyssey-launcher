@@ -14,7 +14,7 @@ export default function WindowDecorations() {
       <div className="flex justify-end">
         <button
           onClick={() => appWindow.close()}
-          className=" inline-flex justify-center items-center w-[30px] h-[30px]"
+          className="inline-flex justify-center items-center w-[30px] h-[30px]"
         >
           <X size={20} />
         </button>
