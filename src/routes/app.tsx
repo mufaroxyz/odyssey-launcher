@@ -7,8 +7,7 @@ import RoutePage from "../components/core/wrappers/route-page";
 import LatestAnnouncementsGroup from "../components/core/game-announcements/latest-announcements-group";
 import { motion } from "framer-motion";
 import AutoDetectedPathModal from "../components/core/installation/auto-detected-path.modal";
-import { useEffect, useState } from "react";
-import DebugOverlay from "../components/core/wrappers/debug-overlay";
+import { useState } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
 
 const container = {

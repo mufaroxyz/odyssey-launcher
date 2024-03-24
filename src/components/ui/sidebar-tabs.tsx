@@ -29,8 +29,6 @@ export const Tabs = ({
     setActive(newTabs[0]);
   };
 
-  const [hovering, setHovering] = useState(false);
-
   return (
     <>
       <div
@@ -46,8 +44,6 @@ export const Tabs = ({
             onClick={() => {
               moveSelectedTabToTop(idx);
             }}
-            onMouseEnter={() => setHovering(true)}
-            onMouseLeave={() => setHovering(false)}
             className={cn("relative w-full h-8 rounded-md", tabClassName)}
             style={{
               transformStyle: "preserve-3d",
@@ -64,9 +60,7 @@ export const Tabs = ({
               />
             )}
 
-            <span className="relative block text-white">
-              {tab.icon}
-            </span>
+            <span className="relative block text-white">{tab.icon}</span>
           </NavLink>
         ))}
       </div>

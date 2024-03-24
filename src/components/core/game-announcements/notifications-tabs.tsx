@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { cn } from "../../../lib/utils";
 import { motion } from "framer-motion";
-import { NavLink } from "react-router-dom";
 
 export type Tab = {
   title: string;

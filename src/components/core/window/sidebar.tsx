@@ -1,5 +1,4 @@
 import { Box, Home } from "lucide-react";
-import { Link, NavLink } from "react-router-dom";
 import { Tab, Tabs } from "../../ui/sidebar-tabs";
 
 export default function Sidebar() {
