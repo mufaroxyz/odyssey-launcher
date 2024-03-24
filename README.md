@@ -2,7 +2,14 @@
 
 ## Download
 
-WIP
+You can download the latest release from the [GitHub releases page](https://github.com/mufaroxyz/genshin-loader/releases/latest).
+
+## Features
+- [x] Launching Game
+- [ ] Installing game
+- [ ] Playing time
+- [ ] Built-in FPS Unlocker
+- [ ] Mod Management (Using Game Banana)
 
 ## Development
 
