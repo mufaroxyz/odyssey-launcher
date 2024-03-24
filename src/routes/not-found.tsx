@@ -1,6 +1,6 @@
 import RoutePage from "../components/core/wrappers/route-page";
 
-export default function Packages() {
+export default function NotFound() {
   return (
     <RoutePage>
       <div className="w-full h-full grid place-items-center">

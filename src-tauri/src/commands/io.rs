@@ -5,7 +5,7 @@ use serde_json::Value;
 
 #[tauri::command]
 pub fn find_installation_path() -> Result<Value, Value> {
-    genshin_utils::try_get_genshin_installation_path()
+    genshin_utils::auto_detect_genshin_installation()
 }
 
 #[tauri::command]

@@ -4,6 +4,7 @@ import LoadingOverlay from "./components/layouts/loading-layout";
 import RootLayout from "./components/layouts/root-layout";
 import NotFound from "./routes/not-found";
 import AnimationLayout from "./components/layouts/animation-layout";
+import Packages from "./routes/packages";
 
 export default () => (
   <HashRouter>
@@ -12,6 +13,7 @@ export default () => (
         <Route element={<AnimationLayout />}>
           <Route element={<LoadingOverlay />}>
             <Route path="/" element={<App />} />
+            <Route path="/packages" element={<Packages />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Route>

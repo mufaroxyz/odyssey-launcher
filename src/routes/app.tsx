@@ -1,14 +1,34 @@
 import { ErrorBoundary } from "react-error-boundary";
 import LoadingScreen from "../components/core/loading-screen";
 import useApplicationStore from "../components/state/application-state";
-import { invoke } from "@tauri-apps/api";
 import { Button } from "../components/ui/button";
-import { Download, SettingsIcon } from "lucide-react";
+import { Download, Play, SettingsIcon } from "lucide-react";
 import RoutePage from "../components/core/wrappers/route-page";
+import LatestAnnouncementsGroup from "../components/core/game-announcements/latest-announcements-group";
+import { motion } from "framer-motion";
+import AutoDetectedPathModal from "../components/core/installation/auto-detected-path.modal";
+import { useEffect, useState } from "react";
 import DebugOverlay from "../components/core/wrappers/debug-overlay";
-import ScrollingBanners from "../components/core/game-announcements/banners";
+import { invoke } from "@tauri-apps/api/tauri";
+
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const item = {
+  hidden: { y: 60 },
+  show: { y: 0 },
+};
 
 function App() {
+  const [currentModal, setCurrentModal] = useState<string | null>(null);
+
   const { applicationSettings, localGameManifest, images } =
     useApplicationStore();
 
@@ -19,9 +39,13 @@ function App() {
   };
 
   async function startGame() {
+    if (!applicationData.applicationSettings.genshinImpactData.path) {
+      setCurrentModal("auto-detected-path");
+    }
+
     console.log("Starting game...");
     await invoke("start_game", {
-      path: applicationSettings.genshinImpactData.path,
+      path: applicationData.applicationSettings.genshinImpactData.path,
     });
   }
 
@@ -38,12 +62,20 @@ function App() {
       }
     >
       <LoadingScreen />
+      <AutoDetectedPathModal
+        open={currentModal === "auto-detected-path"}
+        onOpenChange={(open) => {
+          if (!open) {
+            setCurrentModal(null);
+          }
+        }}
+      />
       <RoutePage
         backgroundImage={applicationData.images.advertisement.splash}
         className="flex-row"
       >
         <div className="flex-1 flex flex-col">
-          <ScrollingBanners />
+          <LatestAnnouncementsGroup />
         </div>
         {/* {applicationData && (
           <DebugOverlay
@@ -56,26 +88,43 @@ function App() {
             }}
           />
         )} */}
-        <div className={"p-4 flex gap-2 self-end"}>
-          <Button
-            variant="dark"
-            label="Greet"
-            className={"!w-fit"}
-            acrylic
-            icon={<SettingsIcon size={20} />}
-          >
-            Configure
-          </Button>
-          <Button
-            onClick={startGame}
-            variant="accent"
-            label="Greet"
-            icon={<Download size={20} />}
-            className={"!w-fit"}
-          >
-            Download Game
-          </Button>
-        </div>
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className={"p-4 flex gap-2 self-end"}
+        >
+          <motion.div variants={item}>
+            <Button
+              variant="dark"
+              label="Greet"
+              className={"!w-fit"}
+              acrylic
+              icon={<SettingsIcon size={20} />}
+            >
+              Configure
+            </Button>
+          </motion.div>
+          <motion.div variants={item}>
+            <Button
+              onClick={startGame}
+              variant="accent"
+              label="Greet"
+              icon={
+                applicationData.applicationSettings.genshinImpactData.path ? (
+                  <Play size={20} />
+                ) : (
+                  <Download size={20} />
+                )
+              }
+              className={"!w-fit"}
+            >
+              {applicationData.applicationSettings.genshinImpactData.path
+                ? "Launch"
+                : "Install Game"}
+            </Button>
+          </motion.div>
+        </motion.div>
       </RoutePage>
     </ErrorBoundary>
   );

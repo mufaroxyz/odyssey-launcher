@@ -24,9 +24,18 @@ pub struct Banner {
 }
 
 #[derive(Serialize)]
+pub struct Post {
+    pub post_type: String,
+    pub title: String,
+    pub url: String,
+    pub show_time: String,
+}
+
+#[derive(Serialize)]
 pub struct Images {
     pub advertisement: Advertisement,
     pub banners: Vec<Banner>,
+    pub posts: Vec<Post>,
 }
 
 impl AssetManager {
@@ -71,9 +80,21 @@ impl AssetManager {
             banners.push(banner);
         }
 
+        let mut posts = Vec::new();
+        for post in data["data"]["post"].as_array().unwrap() {
+            let post = Post {
+                post_type: post["type"].as_str().unwrap().to_string(),
+                title: post["title"].as_str().unwrap().to_string(),
+                url: post["url"].as_str().unwrap().to_string(),
+                show_time: post["show_time"].as_str().unwrap().to_string(),
+            };
+            posts.push(post);
+        }
+
         Images {
             advertisement,
             banners,
+            posts,
         }
     }
 }

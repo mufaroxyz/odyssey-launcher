@@ -9,9 +9,13 @@ edition = "2021"
 
 [build-dependencies]
 tauri-build = { version = "1", features = [] }
+embed-resource = "2.4.2"
+
 
 [dependencies]
-tauri = { version = "1", features = [ "macos-private-api", "window-all",
+tauri = { version = "1", features = [
+  "macos-private-api",
+  "window-all",
   "system-tray",
   "dialog-all",
   "shell-open",
@@ -30,6 +34,8 @@ discord-presence = "1.1.1"
 discord-rich-presence = "0.2.3"
 thiserror = "1.0.58"
 tokio = "1.36.0"
+winreg = "0.52.0"
+simple_logger = "4.3.3"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

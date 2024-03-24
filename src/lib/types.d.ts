@@ -1,5 +1,10 @@
 type Path = string;
 
+export interface ModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
 type FilterDeepNonObjects = {
   [K in keyof T]: T[K] extends object ? never : K;
 };
@@ -44,7 +49,15 @@ export interface Banner {
   img_url: string;
 }
 
+export interface Post {
+  post_type: string;
+  title: string;
+  url: string;
+  show_time: string;
+}
+
 export interface Images {
   advertisement: Advertisement;
   banners: Banner[];
+  posts: Post[];
 }

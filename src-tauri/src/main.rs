@@ -6,6 +6,7 @@ use std::sync::{Arc, Mutex};
 use crate::lib::discord_rpc::{DiscordRPC, DiscordRPCState};
 use discord_rich_presence::activity::{Activity, Assets};
 use lib::asset_manager::{AssetManager, AssetManagerState};
+use simple_logger::SimpleLogger;
 use tauri::{
     CustomMenuItem, Manager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu,
     SystemTrayMenuItem,
@@ -15,6 +16,8 @@ pub mod commands;
 pub mod lib;
 
 fn main() {
+    SimpleLogger::new().init().unwrap();
+
     let start_game = CustomMenuItem::new("start_game".to_string(), "Start Game");
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
 
@@ -87,7 +90,7 @@ fn main() {
 
                 let activity = Activity::new()
                     .state("In launcher")
-                    .details("Idle")
+                    .details("Home screen - Genshin v4.5.0")
                     .assets(assets);
 
                 state.set_activity(activity).expect("rpc");

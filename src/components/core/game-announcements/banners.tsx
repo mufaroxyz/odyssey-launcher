@@ -30,28 +30,9 @@ export default function ScrollingBanners() {
   );
 
   const [currentImage, setCurrentImage] = useState(0);
-  const [direction, setDirection] = useState(0);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-
-  const swipeToImage = (swipeDirection: number) => {
-    setCurrentImage(currentImage + swipeDirection);
-    setDirection(swipeDirection);
-
-    if (currentImage + swipeDirection >= images.length) {
-      setCurrentImage(0);
-    } else if (currentImage + swipeDirection < 0) {
-      setCurrentImage(images.length - 1);
-    }
-  };
 
   const skipToImage = (imageId: number) => {
-    let changeDirection = 0;
-    if (imageId > activeImageIndex) {
-      changeDirection = 1;
-    } else if (imageId < activeImageIndex) {
-      changeDirection = -1;
-    }
-    setCurrentImage(imageId + changeDirection);
+    setCurrentImage(imageId + 1);
   };
 
   useEffect(() => {
@@ -62,21 +43,45 @@ export default function ScrollingBanners() {
   }, [currentImage]);
 
   return (
-    <div className="absolute bottom-10 left-10 w-[400px] overflow-hidden">
-      <div className="relative rounded-xl overflow-hidden bg-bg-color h-[185.5px]">
+    <div>
+      <a
+        className="relative rounded-xl overflow-hidden bg-bg-color h-[185.5px]"
+        href={images[currentImage].img_url}
+        target="_blank"
+      >
         <AnimatePresence initial={false}>
           <motion.img
             key={`announcements-banner-img${currentImage}`}
-            custom={direction}
+            custom={0}
             variants={sliderVariants}
             initial="incoming"
             animate="active"
             exit="exit"
             src={images[currentImage].img}
             transition={sliderTransition}
-            className="absolute overflow-hidden rounded-lg w-[400px] h-[185.5px] bg-cover bg-center bg-no-repeat will-change-transform"
+            className="absolute overflow-hidden rounded-lg w-[400px] h-[185.5px] bg-cover bg-center bg-no-repeat will-change-transform cursor-pointer"
           />
         </AnimatePresence>
+      </a>
+      <div className="absoute rounded-lg border-input-hover border-2 border-solid -translate-y-[50%] mx-auto flex gap-4 z-50 bg-button-dark w-fit py-2 px-4">
+        {images.map((_, i) => {
+          return (
+            <motion.div
+              className="rounded-full bg-white size-2"
+              animate={{
+                scale: currentImage == i ? 1.3 : 0.8,
+              }}
+              onClick={() => {
+                skipToImage(i - 1);
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 200,
+                stagger: 50,
+              }}
+            />
+          );
+        })}
       </div>
     </div>
   );

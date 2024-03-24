@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 interface ButtonProps {
   variant: "filled" | "tonal" | "text" | "outlined" | "accent" | "dark";
   acrylic?: boolean;
+  disabled?: boolean;
   icon?: React.ReactNode;
   href?: string;
   label?: string;
@@ -12,12 +13,20 @@ interface ButtonProps {
 
 export const Button: React.FC<
   ButtonProps & React.HTMLAttributes<HTMLButtonElement | HTMLAnchorElement>
-> = ({ href, variant, label, icon, children, acrylic, onClick }) => {
+> = ({ href, variant, label, icon, children, acrylic, disabled, onClick }) => {
   if (href)
     return (
-      <Link to={href} onClick={onClick}>
+      <Link
+        to={href}
+        onClick={(e) => {
+          if (disabled) e.preventDefault();
+          else onClick && onClick(e);
+        }}
+      >
         <span
-          className={`button-${variant} ${acrylic && "button-style-acrylic"}`}
+          className={`button-${variant} ${acrylic && "button-style-acrylic"} ${
+            disabled && "button-disabled"
+          }`}
           aria-label={label}
         >
           {/* {icon && <img src={`/icons/${icon}`} alt={label} />} */}
@@ -29,8 +38,13 @@ export const Button: React.FC<
 
   return (
     <button
-      onClick={onClick}
-      className={`button-${variant} ${acrylic && "button-style-acrylic"}`}
+      onClick={(e) => {
+        if (disabled) e.preventDefault();
+        else onClick && onClick(e);
+      }}
+      className={`button-${variant} ${acrylic && "button-style-acrylic"} ${
+        disabled && "button-disabled"
+      }`}
       aria-label={label}
     >
       {/* {icon && <img src={`/icons/${icon}`} alt={label} />} */}

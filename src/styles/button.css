@@ -23,6 +23,11 @@ button {
   user-select: none;
 }
 
+.button-disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .button-style-acrylic {
   backdrop-filter: blur(2px);
 }

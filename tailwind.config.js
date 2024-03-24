@@ -5,6 +5,9 @@ export default {
     extend: {
       colors: {
         white: "var(--white)",
+        modal: {
+          DEFAULT: "var(--modal-bg)",
+        },
         accent: {
           DEFAULT: "var(--accent-color)",
           two: "var(--accent-color-two)",
@@ -15,7 +18,7 @@ export default {
         button: {
           DEFAULT: "var(--button)",
           hover: "var(--button-hover)",
-          dark: "var(--button-on-light)",
+          dark: "var(--button-dark)",
         },
         input: {
           DEFAULT: "var(--input)",
@@ -43,5 +46,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 };

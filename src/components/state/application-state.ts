@@ -6,24 +6,6 @@ import KvSettings, {
 import { TauriResponse, TauriRoutes } from "../../lib/ptypes";
 import { ClearedApplicationData } from "../../lib/types";
 import { create } from "zustand";
-import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
-
-const customStorage: StateStorage = {
-  // @ts-ignore
-  getItem: async <T extends SettingsTypeAccessor>(
-    name: SettingsKeys
-  ): Promise<T | null> => {
-    return "" as unknown as T;
-  },
-
-  // @ts-ignore
-  setItem: async <T extends SettingsTypeAccessor>(
-    name: SettingsKeys,
-    value: T
-  ): Promise<void> => {
-    await KvSettings.set(name, value);
-  },
-};
 
 async function fetchData(initial: boolean = false) {
   let applicationSettings;
@@ -80,6 +62,10 @@ async function fetchData(initial: boolean = false) {
 }
 
 interface ApplicationState extends ClearedApplicationData {
+  update: <T extends SettingsTypeAccessor>(
+    key: SettingsKeys,
+    value: T
+  ) => Promise<void>;
   REQUEST_STORE_UPDATE: () => Promise<void>;
   isLoaded: boolean;
   _REQUEST_INITIAL_STORE_LOAD: () => Promise<void>;
@@ -106,8 +92,26 @@ const useApplicationStore = create<ApplicationState>()((set, get) => ({
       icon_url: "",
     },
     banners: [],
+    posts: [],
   },
   isLoaded: false,
+  update: async <T extends SettingsTypeAccessor>(
+    key: SettingsKeys,
+    value: T
+  ) => {
+    console.log("[SET] : ", key, value);
+
+    await KvSettings.set(key, value);
+    set((state) => {
+      return {
+        ...state,
+        applicationSettings: {
+          ...state.applicationSettings,
+          [key]: value,
+        },
+      };
+    });
+  },
   _REQUEST_INITIAL_STORE_LOAD: async () => {
     console.log("[REQUEST_INITIAL_STORE_LOAD] : Requesting store load.");
     if (get().isLoaded) {
