@@ -1,8 +1,18 @@
 # Genshin Loader
 
+> [!NOTE]  
+> This launcher is still WIP and doesn't differ much from the official one yet (Besides better UI). You still need to have the game installed from the official launcher to migrate to this one
+
 ## Download
 
-WIP
+You can download the latest release from the [GitHub releases page](https://github.com/mufaroxyz/genshin-loader/releases/latest).
+
+## Features
+- [x] Launching Game
+- [ ] Installing game
+- [ ] Playing time
+- [ ] Built-in FPS Unlocker
+- [ ] Mod Management (Using Game Banana)
 
 ## Development
 
