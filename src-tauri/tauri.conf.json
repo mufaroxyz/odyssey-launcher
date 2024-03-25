@@ -7,11 +7,16 @@
   },
   "package": {
     "productName": "genshin-loader",
-    "version": "0.0.2"
+    "version": "0.0.3"
   },
   "tauri": {
     "updater": {
-      "active": false
+      "active": true,
+      "endpoints": [
+        "https://genshin-loader-updater.mufaro.workers.dev/check/mufaroxyz/genshin-loader/{{target}}/{{arch}}/{{current_version}}"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVCMDdCNkU1MkExQTUxNTQKUldSVVVSb3E1YllINjdiYTNRVXVFSEJWYnExVHFUYVEvbFZzb05OWjdQTmxPckV3UWhrWHVNTFoK"
     },
     "macOSPrivateApi": true,
     "allowlist": {
