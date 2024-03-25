@@ -14,7 +14,7 @@
     "url": "https://github.com/mufaroxyz"
   },
   "scripts": {
-    "dev": "set RUST_LOG=\"genshin-loader\" && vite",
+    "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri"

@@ -39,25 +39,26 @@ export interface LocalGameManifest {
 }
 
 export interface Advertisement {
-  splash: string;
+  background: string;
   icon: string;
-  icon_url: string;
+  url: string;
 }
 
 export interface Banner {
+  banner_id: string;
   img: string;
-  img_url: string;
+  url: string;
 }
 
 export interface Post {
-  post_type: string;
+  type: string;
   title: string;
   url: string;
   show_time: string;
 }
 
 export interface Images {
-  advertisement: Advertisement;
-  banners: Banner[];
-  posts: Post[];
+  adv: Advertisement;
+  banner: Banner[];
+  post: Post[];
 }

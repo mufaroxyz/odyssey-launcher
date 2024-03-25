@@ -29,18 +29,17 @@ impl<'a> DiscordRPC<'a> {
         Default::default()
     }
 
-    pub fn start(&mut self) {
+    pub fn start(&mut self) -> Result<(), Box<dyn Error>> {
         let client_id = self.client_id;
 
-        let mut client = DiscordIpcClient::new(client_id as &str).expect("Failed to create client");
+        let mut client = DiscordIpcClient::new(client_id as &str)?;
 
-        if let Err(err) = client.connect() {
-            eprintln!("Failed to connect to Discord IPC: {}", err);
-            return;
-        }
+        client.connect()?;
 
         self.ready = true;
         self.client = Some(client);
+
+        Ok(())
     }
 
     pub fn set_activity(&mut self, activity: activity::Activity) -> Result<(), Box<dyn Error>> {

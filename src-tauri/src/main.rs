@@ -84,7 +84,7 @@ fn main() {
                 let state = &app_handle.state::<DiscordRPCState>();
                 let mut state = state.0.lock().unwrap();
 
-                state.start();
+                let _ = state.start();
 
                 let assets = Assets::new().large_image("logo");
 
@@ -93,7 +93,7 @@ fn main() {
                     .details("Home screen - Genshin v4.5.0")
                     .assets(assets);
 
-                state.set_activity(activity).expect("rpc");
+                let _ = state.set_activity(activity);
             }
             RunEvent::ExitRequested { api, .. } => {
                 api.prevent_exit();

@@ -16,13 +16,6 @@ fn main() {
               />
             </dependentAssembly>
           </dependency>
-          <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
-            <security>
-                <requestedPrivileges>
-                    <requestedExecutionLevel level="requireAdministrator" uiAccess="false" />
-                </requestedPrivileges>
-            </security>
-          </trustInfo>
         </assembly>
         "#,
     );

@@ -8,7 +8,7 @@ import LatestAnnouncementsGroup from "../components/core/game-announcements/late
 import { motion } from "framer-motion";
 import AutoDetectedPathModal from "../components/core/installation/auto-detected-path.modal";
 import { useState } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
+import { convertFileSrc, invoke } from "@tauri-apps/api/tauri";
 
 const container = {
   hidden: { opacity: 0 },
@@ -70,7 +70,9 @@ function App() {
         }}
       />
       <RoutePage
-        backgroundImage={applicationData.images.advertisement.splash}
+        // backgroundImage={applicationData.images.advertisement.splash}
+        // the file is now file:// path
+        backgroundImage={convertFileSrc(applicationData.images.adv.background)}
         className="flex-row"
       >
         <div className="flex-1 flex flex-col">

@@ -12,7 +12,7 @@ const notificationVariants = {
 export default function Notifications() {
   const { posts } = useApplicationStore(
     useShallow((state) => ({
-      posts: state.images.posts,
+      posts: state.images.post,
     }))
   );
 
@@ -22,7 +22,7 @@ export default function Notifications() {
         title: notificationVariants.POST_TYPE_ANNOUNCE,
         value: "announcements",
         content: posts
-          .filter((post) => post.post_type === "POST_TYPE_ANNOUNCE")
+          .filter((post) => post.type === "POST_TYPE_ANNOUNCE")
           .map((post) => {
             return (
               <Notification
@@ -37,7 +37,7 @@ export default function Notifications() {
         title: notificationVariants.POST_TYPE_ACTIVITY,
         value: "activities",
         content: posts
-          .filter((post) => post.post_type === "POST_TYPE_ACTIVITY")
+          .filter((post) => post.type === "POST_TYPE_ACTIVITY")
           .map((post) => {
             return (
               <Notification
@@ -52,7 +52,7 @@ export default function Notifications() {
         title: notificationVariants.POST_TYPE_INFO,
         value: "info",
         content: posts
-          .filter((post) => post.post_type === "POST_TYPE_INFO")
+          .filter((post) => post.type === "POST_TYPE_INFO")
           .map((post) => {
             return (
               <Notification

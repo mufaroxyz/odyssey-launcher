@@ -21,6 +21,17 @@
     "macOSPrivateApi": true,
     "allowlist": {
       "all": false,
+      "path": {
+        "all": true
+      },
+      "fs": {
+        "all": true,
+        "scope": ["**"]
+      },
+      "protocol": {
+        "asset": true,
+        "assetScope": ["**"]
+      },
       "shell": {
         "all": false,
         "open": true
