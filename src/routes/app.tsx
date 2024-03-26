@@ -37,15 +37,22 @@ function App() {
     images,
   };
 
+  async function installGame() {
+    await invoke("game_install");
+  }
+
   async function startGame() {
     if (!applicationData.applicationSettings.genshinImpactData.path) {
       setCurrentModal("auto-detected-path");
+      return;
     }
 
-    console.log("Starting game...");
-    await invoke("start_game", {
-      path: applicationData.applicationSettings.genshinImpactData.path,
-    });
+    if (applicationData.applicationSettings.genshinImpactData.path) {
+      await invoke("start_game", {
+        path: applicationData.applicationSettings.genshinImpactData.path,
+      });
+      return;
+    }
   }
 
   return (
@@ -70,25 +77,12 @@ function App() {
         }}
       />
       <RoutePage
-        // backgroundImage={applicationData.images.advertisement.splash}
-        // the file is now file:// path
         backgroundImage={convertFileSrc(applicationData.images.adv.background)}
         className="flex-row"
       >
         <div className="flex-1 flex flex-col">
           <LatestAnnouncementsGroup />
         </div>
-        {/* {applicationData && (
-          <DebugOverlay
-            objectData={{
-              gamePath:
-                applicationData.applicationSettings.genshinImpactData.path,
-              gameVersion: applicationData.localGameManifest.game_version,
-              pluginVersion: applicationData.localGameManifest.plugin_7_version,
-              channel: applicationData.localGameManifest.channel,
-            }}
-          />
-        )} */}
         <motion.div
           variants={container}
           initial="hidden"
@@ -108,7 +102,11 @@ function App() {
           </motion.div>
           <motion.div variants={item}>
             <Button
-              onClick={startGame}
+              onClick={() => {
+                applicationData.applicationSettings.genshinImpactData.path
+                  ? startGame()
+                  : installGame();
+              }}
               variant="accent"
               label="Greet"
               icon={

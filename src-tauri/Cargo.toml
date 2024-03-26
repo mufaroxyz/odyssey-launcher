@@ -13,7 +13,11 @@ embed-resource = "2.4.2"
 
 
 [dependencies]
-tauri = { version = "1", features = [ "protocol-asset", "path-all", "fs-all", "updater",
+tauri = { version = "1", features = [
+  "protocol-asset",
+  "path-all",
+  "fs-all",
+  "updater",
   "macos-private-api",
   "window-all",
   "system-tray",
@@ -36,6 +40,19 @@ thiserror = "1.0.58"
 tokio = "1.36.0"
 winreg = "0.52.0"
 simple_logger = "4.3.3"
+sysinfo = "0.30.7"
+minreq = { version = "2.11.0", features = [
+  "json-using-serde",
+  "https-rustls-probe",
+  "proxy",
+] }
+dns-lookup = "2.0.4"
+tar = "0.4.40"
+zip = "0.6.6"
+bzip2 = "0.4.4"
+flate2 = "1.0.28"
+xz = "0.1.0"
+anyhow = "1.0.81"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

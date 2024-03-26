@@ -1,11 +1,9 @@
 use std::{
-    fmt::format,
     fs::File,
     io::Write,
     sync::{Arc, Mutex},
 };
 
-use log::{debug, info};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -51,9 +49,46 @@ pub struct ReturnedImages {
     pub data: Images,
 }
 
-pub struct FileMap {
-    pub file_type: String,
+#[derive(Serialize, Deserialize, Clone)]
+pub struct VoicePack {
+    pub language: String,
     pub path: String,
+    pub size: String,
+    pub package_size: String,
+    pub md5: String,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct GameSegments {
+    pub path: String,
+    pub md5: String,
+    pub package_size: String,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct GameLatest {
+    pub name: String,
+    pub version: String,
+    pub size: String,
+    pub md5: String,
+    pub voice_packs: Vec<VoicePack>,
+    pub segments: Vec<GameSegments>,
+    pub package_size: String,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct GameLatestMiddleware {
+    pub latest: GameLatest,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct GameResource {
+    pub game: GameLatestMiddleware,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct GameResourceMiddleware {
+    pub data: GameResource,
 }
 
 impl AssetManager {
@@ -77,6 +112,16 @@ impl AssetManager {
         let current_dir = std::env::current_dir().unwrap();
         let current_dir = current_dir.to_str().unwrap();
         format!("{}/{}", current_dir, path)
+    }
+
+    pub fn fetch_game_resources(&self) -> GameResourceMiddleware {
+        let url = &self.mhy_launcher_cdn_game_resources;
+
+        let response = reqwest::blocking::get(url).unwrap();
+        let data =
+            serde_json::from_str::<GameResourceMiddleware>(&response.text().unwrap()).unwrap();
+
+        return data;
     }
 
     pub fn fetch_images(&self) -> Images {

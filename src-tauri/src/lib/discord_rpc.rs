@@ -4,7 +4,6 @@ use std::{
 };
 
 use discord_rich_presence::{activity, DiscordIpc, DiscordIpcClient};
-use log::info;
 
 pub struct DiscordRPC<'a> {
     client_id: &'a str,

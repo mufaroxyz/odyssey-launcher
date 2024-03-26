@@ -13,6 +13,7 @@ use tauri::{
 };
 
 pub mod commands;
+pub mod installation;
 pub mod lib;
 
 fn main() {
@@ -75,7 +76,8 @@ fn main() {
             commands::io::ensure_installation_path,
             commands::io::fetch_local_manifest,
             commands::application_executor::start_game,
-            commands::assets::fetch_images
+            commands::assets::fetch_images,
+            commands::installation::game_install,
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
