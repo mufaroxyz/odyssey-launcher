@@ -1,5 +1,5 @@
 [package]
-name = "genshin-loader"
+name = "odyssey-launcher"
 version = "0.0.0"
 description = "GUI Application to manage your GIMI Mods, easily manage your fps unlocking"
 authors = ["Mufaro"]

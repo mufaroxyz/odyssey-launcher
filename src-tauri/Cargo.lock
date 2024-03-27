@@ -1132,39 +1132,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "genshin-loader"
-version = "0.0.0"
-dependencies = [
- "anyhow",
- "base64 0.22.0",
- "bzip2",
- "discord-presence",
- "discord-rich-presence",
- "dns-lookup",
- "embed-resource",
- "engine",
- "flate2",
- "ini",
- "log",
- "minreq",
- "reqwest",
- "scraper",
- "serde",
- "serde_json",
- "simple_logger",
- "sysinfo",
- "tar",
- "tauri",
- "tauri-build",
- "tauri-plugin-store",
- "thiserror",
- "tokio",
- "winreg 0.52.0",
- "xz",
- "zip",
-]
-
-[[package]]
 name = "getopts"
 version = "0.2.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2209,6 +2176,39 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a6a622008b6e321afc04970976f62ee297fdbaa6f95318ca343e3eebb9648441"
 dependencies = [
  "memchr",
+]
+
+[[package]]
+name = "odyssey-launcher"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "base64 0.22.0",
+ "bzip2",
+ "discord-presence",
+ "discord-rich-presence",
+ "dns-lookup",
+ "embed-resource",
+ "engine",
+ "flate2",
+ "ini",
+ "log",
+ "minreq",
+ "reqwest",
+ "scraper",
+ "serde",
+ "serde_json",
+ "simple_logger",
+ "sysinfo",
+ "tar",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-store",
+ "thiserror",
+ "tokio",
+ "winreg 0.52.0",
+ "xz",
+ "zip",
 ]
 
 [[package]]

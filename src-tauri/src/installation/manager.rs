@@ -53,26 +53,35 @@ impl From<minreq::Error> for DiffDownloadingError {
     }
 }
 
-pub fn install_game(diffs: GameLatest) -> Result<(), ()> {
+pub fn install_game(
+    diffs: GameLatest,
+    installation_path: PathBuf,
+    temp_path: PathBuf,
+) -> Result<(), ()> {
     info!("Spawning installation thread");
+
     std::thread::spawn(move || {
-        let _ = install_thread(diffs);
+        let _ = install_thread(diffs, installation_path, temp_path);
     });
 
     Ok(())
 }
 
-fn install_thread(diffs: GameLatest) -> Result<(), DiffDownloadingError> {
+fn install_thread(
+    diffs: GameLatest,
+    installation_path: PathBuf,
+    temp_path: PathBuf,
+) -> Result<(), DiffDownloadingError> {
     info!("Getting package segments");
 
     // TODO: Change this to the actual installation path instead of fixed path for testing
 
-    let INSTALLATION_PATH: PathBuf = Path::new("M://genshin_loader/").to_path_buf();
+    // let INSTALLATION_PATH: PathBuf = Path::new("M://genshin_loader/").to_path_buf();
     // let TEMP_PATH: PathBuf = std::env::temp_dir().to_path_buf();
-    let TEMP_PATH = Path::new("M://temp/").to_path_buf();
+    // let TEMP_PATH = Path::new("M://temp/").to_path_buf();
 
-    println!("INSTALLATION_PATH: {:?}", INSTALLATION_PATH);
-    println!("TEMP_PATH: {:?}", TEMP_PATH);
+    println!("Installation Path: {:?}", &installation_path);
+    println!("Temp Path: {:?}", &temp_path);
 
     let segment_urls = diffs
         .segments
@@ -85,14 +94,14 @@ fn install_thread(diffs: GameLatest) -> Result<(), DiffDownloadingError> {
 
     info!("Checking free temp space");
 
-    let Some(space) = free_space::available(&TEMP_PATH) else {
-        error!("Path is not mounted, :{:?}", &TEMP_PATH);
+    let Some(space) = free_space::available(&temp_path) else {
+        error!("Path is not mounted, :{:?}", &temp_path);
         return Err(DiffDownloadingError::DownloadingError(
-            DownloadingError::PathNotMounted(TEMP_PATH.into()),
+            DownloadingError::PathNotMounted(temp_path.into()),
         ));
     };
 
-    let required = if free_space::is_same_disk(&TEMP_PATH, &INSTALLATION_PATH) {
+    let required = if free_space::is_same_disk(&temp_path, &installation_path) {
         downloaded_size + unpacked_size
     } else {
         downloaded_size
@@ -101,20 +110,20 @@ fn install_thread(diffs: GameLatest) -> Result<(), DiffDownloadingError> {
     if space < required {
         error!("Not enough free space available in the temp folder. Required: {required}. Available: {space}");
         return Err(DiffDownloadingError::DownloadingError(
-            DownloadingError::NoSpaceAvailable(TEMP_PATH, required, space),
+            DownloadingError::NoSpaceAvailable(temp_path, required, space),
         ));
     }
 
     info!("Checking free installation space");
 
-    let Some(space) = free_space::available(&INSTALLATION_PATH) else {
-        error!("Path is not mounted, :{:?}", &INSTALLATION_PATH);
+    let Some(space) = free_space::available(&installation_path) else {
+        error!("Path is not mounted, :{:?}", &installation_path);
         return Err(DiffDownloadingError::DownloadingError(
-            DownloadingError::PathNotMounted(INSTALLATION_PATH.into()),
+            DownloadingError::PathNotMounted(installation_path.into()),
         ));
     };
 
-    let required: u64 = if free_space::is_same_disk(&INSTALLATION_PATH, &TEMP_PATH) {
+    let required: u64 = if free_space::is_same_disk(&installation_path, &temp_path) {
         downloaded_size + unpacked_size
     } else {
         downloaded_size
@@ -123,7 +132,7 @@ fn install_thread(diffs: GameLatest) -> Result<(), DiffDownloadingError> {
     if space < required {
         error!("Not enough free space available in the installation folder. Required: {unpacked_size}. Available: {space}");
         return Err(DiffDownloadingError::DownloadingError(
-            DownloadingError::NoSpaceAvailable(INSTALLATION_PATH, required, space),
+            DownloadingError::NoSpaceAvailable(installation_path, required, space),
         ));
     }
 
@@ -142,7 +151,7 @@ fn install_thread(diffs: GameLatest) -> Result<(), DiffDownloadingError> {
 
         println!("test");
 
-        downloader.download(TEMP_PATH.join(&segment_name), move |current, _| {
+        downloader.download(temp_path.join(&segment_name), move |current, _| {
             let curr_downloaded = current_downloaded + current;
             info!(
                 "Downloading segment: {}/{}",
@@ -159,7 +168,7 @@ fn install_thread(diffs: GameLatest) -> Result<(), DiffDownloadingError> {
 
     let first_segment_name = segments_names[0].clone();
 
-    match Archive::open(TEMP_PATH.join(&first_segment_name)) {
+    match Archive::open(temp_path.join(&first_segment_name)) {
         Ok(mut archive) => {
             let mut total = 0;
 
@@ -168,12 +177,12 @@ fn install_thread(diffs: GameLatest) -> Result<(), DiffDownloadingError> {
             for entry in &entries {
                 total += entry.size.get_size();
 
-                // let path = INSTALLATION_PATH.join(&entry.name);
+                // let path = installation_path.join(&entry.name);
             }
 
             trace!("Extracting archive");
 
-            let unpacking_path = INSTALLATION_PATH.clone();
+            let unpacking_path = installation_path.clone();
 
             let handle_2 = std::thread::spawn(move || {
                 let mut entries = entries
@@ -214,7 +223,7 @@ fn install_thread(diffs: GameLatest) -> Result<(), DiffDownloadingError> {
                 }
             });
 
-            let extract_to = INSTALLATION_PATH.clone();
+            let extract_to = installation_path.clone();
 
             let handle_1 = std::thread::spawn(move || {
                 info!(
@@ -222,13 +231,13 @@ fn install_thread(diffs: GameLatest) -> Result<(), DiffDownloadingError> {
                     extract_to.clone()
                 );
 
-                match Archive::open(TEMP_PATH.join(first_segment_name)) {
+                match Archive::open(temp_path.join(first_segment_name)) {
                     Ok(mut archive) => match archive.extract(&extract_to) {
                         Ok(_) => {
                             #[allow(unused_must_use)]
                             {
                                 for name in segments_names {
-                                    std::fs::remove_file(TEMP_PATH.join(name));
+                                    std::fs::remove_file(temp_path.join(name));
                                 }
                             }
 
