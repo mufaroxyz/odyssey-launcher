@@ -61,8 +61,6 @@ fn main() {
         })
         .on_window_event(|event| match event.event() {
             tauri::WindowEvent::CloseRequested { api, .. } => {
-                println!("Close requested");
-
                 event.window().hide().unwrap();
                 api.prevent_close();
             }
@@ -73,6 +71,7 @@ fn main() {
         .manage(AssetManagerState(Arc::new(Mutex::new(asset_manager))))
         .invoke_handler(tauri::generate_handler![
             commands::hello_world::hello_world,
+            commands::utils::send_notification,
             commands::io::find_installation_path,
             commands::io::ensure_installation_path,
             commands::io::fetch_local_manifest,

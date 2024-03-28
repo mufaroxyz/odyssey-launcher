@@ -8,6 +8,7 @@ export enum TauriRoutes {
   GetInstalledVersion = "get_installed_version",
   GetExecutablePath = "get_executable_path",
   GameInstall = "game_install",
+  SendNotification = "send_notification",
 }
 
 export type GlobalResponseError = {
@@ -30,6 +31,10 @@ export interface TauriPayload {
   [TauriRoutes.GameInstall]: {
     installationPath: string;
     tempPath?: string;
+  };
+  [TauriRoutes.SendNotification]: {
+    title: string;
+    body: string;
   };
 }
 
@@ -55,4 +60,5 @@ export interface TauriResponse {
     path: string;
   };
   [TauriRoutes.GameInstall]: void;
+  [TauriRoutes.SendNotification]: void;
 }
