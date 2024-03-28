@@ -1,5 +1,7 @@
 import { appWindow, getAll } from "@tauri-apps/api/window";
 import { X } from "lucide-react";
+import { tauriInvoke } from "../../../lib/utils";
+import { TauriRoutes } from "../../../lib/ptypes";
 
 export default function WindowDecorations() {
   return (
@@ -16,6 +18,10 @@ export default function WindowDecorations() {
       <div className="flex justify-end">
         <button
           onClick={async () => {
+            tauriInvoke(TauriRoutes.SendNotification, {
+              title: "Odyssey Launcher",
+              body: "Minimized the application to the tray menu.",
+            });
             appWindow.hide();
           }}
           className="inline-flex justify-center rounded-none items-center w-[30px] h-[30px] hover:bg-red-500 hover:bg-opacity-50 transition-colors duration-150 ease-in-out"
