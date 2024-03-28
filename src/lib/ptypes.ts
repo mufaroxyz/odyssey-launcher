@@ -5,31 +5,54 @@ export enum TauriRoutes {
   EnsureInstallationPath = "ensure_installation_path",
   FetchLocalManifest = "fetch_local_manifest",
   FetchImages = "fetch_images",
+  GetInstalledVersion = "get_installed_version",
+  GetExecutablePath = "get_executable_path",
+  GameInstall = "game_install",
+}
+
+export type GlobalResponseError = {
+  error: string;
+};
+
+export interface TauriPayload {
+  [TauriRoutes.FindInstallationPath]: void;
+  [TauriRoutes.EnsureInstallationPath]: {
+    path: string;
+  };
+  [TauriRoutes.FetchLocalManifest]: {
+    path: string;
+  };
+  [TauriRoutes.FetchImages]: {
+    path: string;
+  };
+  [TauriRoutes.GetInstalledVersion]: void;
+  [TauriRoutes.GetExecutablePath]: void;
+  [TauriRoutes.GameInstall]: {
+    installationPath: string;
+    tempPath?: string;
+  };
 }
 
 export interface TauriResponse {
-  ["TauriRoutes.FindInstallationPath"]:
-    | {
-        path: string;
-      }
-    | {
-        error: string;
-      };
-  ["TauriRoutes.EnsureInstallationPath"]:
-    | {
-        path: string;
-      }
-    | {
-        error: string;
-      };
-  ["TauriRoutes.FetchLocalManifest"]: {
+  [TauriRoutes.FindInstallationPath]: {
+    path: string;
+  };
+  [TauriRoutes.EnsureInstallationPath]: {
+    path: string;
+  };
+  [TauriRoutes.FetchLocalManifest]: {
     path: string;
     manifest: LocalGameManifest;
-    error?: never;
   };
-  ["TauriRoutes.FetchImages"]: {
+  [TauriRoutes.FetchImages]: {
     path: string;
     images: Images;
-    error?: never;
   };
+  [TauriRoutes.GetInstalledVersion]: {
+    version: string;
+  };
+  [TauriRoutes.GetExecutablePath]: {
+    path: string;
+  };
+  [TauriRoutes.GameInstall]: void;
 }
