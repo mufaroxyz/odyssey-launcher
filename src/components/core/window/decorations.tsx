@@ -1,4 +1,4 @@
-import { appWindow, getAll } from "@tauri-apps/api/window";
+import { appWindow } from "@tauri-apps/api/window";
 import { X } from "lucide-react";
 import { tauriInvoke } from "../../../lib/utils";
 import { TauriRoutes } from "../../../lib/ptypes";
