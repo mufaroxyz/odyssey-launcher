@@ -1,11 +1,18 @@
-import { invoke } from "@tauri-apps/api/tauri";
-import KvSettings, {
-  SettingsKeys,
-  SettingsTypeAccessor,
-} from "../../lib/store";
-import { TauriResponse, TauriRoutes } from "../../lib/ptypes";
-import { ClearedApplicationData } from "../../lib/types";
+import KvSettings, { SettingsKeys } from "../../lib/store";
+import { TauriRoutes } from "../../lib/ptypes";
+import {
+  ApplicationDataAccessor,
+  ApplicationDataKeys,
+  ApplicationSettings,
+  ClearedApplicationData,
+} from "../../lib/types";
 import { create } from "zustand";
+import { tauriInvoke } from "../../lib/utils";
+import {
+  defaultApplicationData,
+  defaultImages,
+  defaultLocalGameManifest,
+} from "./application-state.default";
 
 async function fetchData(initial: boolean = false) {
   let applicationSettings;
@@ -14,104 +21,78 @@ async function fetchData(initial: boolean = false) {
   } else {
     applicationSettings = await KvSettings.getAll();
   }
-  let localGameManifest = await invoke<
-    TauriResponse["TauriRoutes.FetchLocalManifest"]
-  >(TauriRoutes.FetchLocalManifest, {
-    path: applicationSettings.genshinImpactData.path,
-  }).catch((err) => {
+
+  const localGameManifest = await tauriInvoke(
+    TauriRoutes.GetInstalledVersion
+  ).catch((err) => {
     console.error(err);
     return {
-      manifest: {
-        channel: "",
-        cps: "",
-        game_version: "",
-        plugin_7_version: "",
-        sub_channel: "",
-        uapc: "",
-      },
+      ...defaultLocalGameManifest,
       error: "Failed to fetch local manifest.",
     };
   });
 
-  let images = await invoke<TauriResponse["TauriRoutes.FetchImages"]>(
-    TauriRoutes.FetchImages
-  ).catch((err) => {
+  const images = await tauriInvoke(TauriRoutes.FetchImages).catch((err) => {
     console.error(err);
     return {
-      advertisement: {
-        splash: "",
-        icon: "",
-        icon_url: "",
-      },
-      banner: [],
+      ...defaultImages,
       error: "Failed to fetch images.",
     };
   });
 
-  console.log("[FETCH_DATA] : ", {
-    applicationSettings,
-    localGameManifest: localGameManifest,
-    images,
-  });
-
   return {
     applicationSettings,
-    localGameManifest: localGameManifest.manifest,
+    localGameManifest: localGameManifest,
     images,
   };
 }
 
 interface ApplicationState extends ClearedApplicationData {
-  update: <T extends SettingsTypeAccessor>(
+  update: <T extends ApplicationSettings[SettingsKeys] | null>(
     key: SettingsKeys,
     value: T
   ) => Promise<void>;
-  REQUEST_STORE_UPDATE: () => Promise<void>;
+  updateGlobal: <T extends ApplicationDataAccessor>(
+    key: ApplicationDataKeys,
+    value: T
+  ) => Promise<void>;
+  getValue: <T extends ApplicationDataKeys>(
+    key: T
+  ) => ClearedApplicationData[T];
   isLoaded: boolean;
+  REQUEST_STORE_UPDATE: () => Promise<void>;
   _REQUEST_INITIAL_STORE_LOAD: () => Promise<void>;
 }
 
 const useApplicationStore = create<ApplicationState>()((set, get) => ({
-  applicationSettings: {
-    genshinImpactData: {
-      path: "",
-    },
-  },
-  localGameManifest: {
-    channel: "",
-    cps: "",
-    game_version: "",
-    plugin_7_version: "",
-    sub_channel: "",
-    uapc: "",
-  },
-  images: {
-    advertisement: {
-      splash: "",
-      icon: "",
-      icon_url: "",
-    },
-    banners: [],
-    posts: [],
-  },
+  ...defaultApplicationData,
   isLoaded: false,
-  update: async <T extends SettingsTypeAccessor>(
+  update: async <T extends ApplicationSettings[SettingsKeys] | null>(
     key: SettingsKeys,
     value: T
   ) => {
     console.log("[SET] : ", key, value);
 
     await KvSettings.set(key, value);
-    set((state) => {
-      return {
-        ...state,
-        applicationSettings: {
-          ...state.applicationSettings,
-          [key]: value,
-        },
-      };
-    });
+
+    set(() => ({
+      applicationSettings: {
+        ...get().applicationSettings,
+        [key]: value,
+      },
+    }));
   },
+  // Basically an update function but for global application state without saving to disk.
+  updateGlobal: async <T extends ApplicationDataAccessor>(
+    key: ApplicationDataKeys,
+    value: T
+  ) =>
+    set(() => ({
+      [key]: value,
+    })),
+
+  getValue: <T extends ApplicationDataKeys>(key: T) => get()[key],
+
   _REQUEST_INITIAL_STORE_LOAD: async () => {
     console.log("[REQUEST_INITIAL_STORE_LOAD] : Requesting store load.");
     if (get().isLoaded) {

@@ -1,7 +1,17 @@
 import { Box, Home } from "lucide-react";
 import { Tab, Tabs } from "../../ui/sidebar-tabs";
+import { motion } from "framer-motion";
+import useApplicationStore from "../../state/application-state";
+import { useShallow } from "zustand/react/shallow";
+import { cn } from "../../../lib/utils";
 
 export default function Sidebar() {
+  const { isInstalling } = useApplicationStore(
+    useShallow((s) => ({
+      isInstalling: s.installationContext.isInstalling,
+    }))
+  );
+
   const items: Tab[] = [
     {
       icon: <Home size={20} />,
@@ -16,8 +26,16 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="w-12 mt-4 px-1 h-full">
+    <motion.div
+      initial={{ x: 0 }}
+      animate={{
+        x: isInstalling ? -100 : 0,
+        width: isInstalling ? 0 : "3rem",
+        transition: { duration: 0.3 },
+      }}
+      className={cn("px-1 mt-4 h-full inline")}
+    >
       <Tabs tabs={items} />
-    </div>
+    </motion.div>
   );
 }

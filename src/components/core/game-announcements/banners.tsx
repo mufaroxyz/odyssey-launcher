@@ -2,6 +2,7 @@ import { useShallow } from "zustand/react/shallow";
 import useApplicationStore from "../../state/application-state";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { convertFileSrc } from "@tauri-apps/api/tauri";
 
 const sliderVariants = {
   incoming: (direction: number) => ({
@@ -25,7 +26,7 @@ const sliderTransition = {
 export default function ScrollingBanners() {
   const { images } = useApplicationStore(
     useShallow((state) => ({
-      images: state.images.banners,
+      images: state.images.banner,
     }))
   );
 
@@ -46,7 +47,7 @@ export default function ScrollingBanners() {
     <div>
       <a
         className="relative rounded-xl overflow-hidden bg-bg-color h-[185.5px]"
-        href={images[currentImage].img_url}
+        href={images[currentImage].url}
         target="_blank"
       >
         <AnimatePresence initial={false}>
@@ -57,7 +58,7 @@ export default function ScrollingBanners() {
             initial="incoming"
             animate="active"
             exit="exit"
-            src={images[currentImage].img}
+            src={convertFileSrc(images[currentImage].img)}
             transition={sliderTransition}
             className="absolute overflow-hidden rounded-lg w-[400px] h-[185.5px] bg-cover bg-center bg-no-repeat will-change-transform cursor-pointer"
           />

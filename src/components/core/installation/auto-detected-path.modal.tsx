@@ -6,15 +6,19 @@ import {
   DialogFactualContent,
   DialogFooter,
 } from "../../ui/dialog";
-import { invoke } from "@tauri-apps/api/tauri";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { ModalProps } from "../../../lib/types";
 import useApplicationStore from "../../state/application-state";
+import { tauriInvoke } from "../../../lib/utils";
+import { TauriRoutes } from "../../../lib/ptypes";
 
 export default function AutoDetectedPathModal({
   open,
   onOpenChange,
-}: ModalProps) {
+  setCurrentModal,
+}: ModalProps & {
+  setCurrentModal: React.Dispatch<React.SetStateAction<string | null>>;
+}) {
   const [path, setPath] = useState("");
   const { update } = useApplicationStore((s) => ({ update: s.update }));
 
@@ -22,19 +26,22 @@ export default function AutoDetectedPathModal({
     if (!open) return;
 
     const get = async () => {
-      const path = await invoke("find_installation_path", {}).then((res) => {
-        return (res as { path: string }).path;
-      });
-      console.log(path);
+      const path = await tauriInvoke(TauriRoutes.FindInstallationPath).then(
+        (r) => r.path
+      );
       setPath(path);
     };
 
     get();
-  });
+  }, [open]);
 
   function handleConfirm() {
     update("genshinImpactData", { path });
     onOpenChange(false);
+  }
+
+  function freshInstall() {
+    setCurrentModal("fresh-install");
   }
 
   return (
@@ -55,8 +62,8 @@ export default function AutoDetectedPathModal({
             Confirm
           </Button>
 
-          <Button disabled variant="filled">
-            Choose another directory
+          <Button onClick={freshInstall} variant="filled">
+            Fresh Install
           </Button>
 
           <DialogClose asChild>

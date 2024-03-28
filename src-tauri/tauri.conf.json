@@ -6,8 +6,8 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "genshin-loader",
-    "version": "0.0.3"
+    "productName": "Odyssey Launcher",
+    "version": "0.0.4"
   },
   "tauri": {
     "updater": {
@@ -21,6 +21,20 @@
     "macOSPrivateApi": true,
     "allowlist": {
       "all": false,
+      "notification": {
+        "all": true
+      },
+      "path": {
+        "all": true
+      },
+      "fs": {
+        "all": true,
+        "scope": ["**"]
+      },
+      "protocol": {
+        "asset": true,
+        "assetScope": ["**"]
+      },
       "shell": {
         "all": false,
         "open": true
@@ -37,7 +51,7 @@
     },
     "windows": [
       {
-        "title": "Genshin Loader by Mufaro",
+        "title": "Odyssey Launcher",
         "width": 1280,
         "height": 730,
         "transparent": true,
@@ -51,14 +65,14 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "genshin-loader.mufaro.xyz",
+      "identifier": "odyssey-launcher.mufaro.xyz",
       "icon": [
         "icons/icon.ico",
         "icons/icon.png"
       ]
     },
     "systemTray": {
-      "title": "Genshin Loader",
+      "title": "Odyssey Launcher",
       "iconPath": "icons/icon.ico",
       "iconAsTemplate": true,
       "menuOnLeftClick": false

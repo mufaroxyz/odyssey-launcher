@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { cn } from "../../lib/utils";
 
 interface ButtonProps {
   variant: "filled" | "tonal" | "text" | "outlined" | "accent" | "dark";
@@ -13,7 +14,17 @@ interface ButtonProps {
 
 export const Button: React.FC<
   ButtonProps & React.HTMLAttributes<HTMLButtonElement | HTMLAnchorElement>
-> = ({ href, variant, label, icon, children, acrylic, disabled, onClick }) => {
+> = ({
+  href,
+  variant,
+  label,
+  icon,
+  children,
+  acrylic,
+  disabled,
+  onClick,
+  className,
+}) => {
   if (href)
     return (
       <Link
@@ -42,9 +53,12 @@ export const Button: React.FC<
         if (disabled) e.preventDefault();
         else onClick && onClick(e);
       }}
-      className={`button-${variant} ${acrylic && "button-style-acrylic"} ${
-        disabled && "button-disabled"
-      }`}
+      className={cn(
+        `button-${variant} ${acrylic && "button-style-acrylic"} ${
+          disabled && "button-disabled"
+        }`,
+        className
+      )}
       aria-label={label}
     >
       {/* {icon && <img src={`/icons/${icon}`} alt={label} />} */}
