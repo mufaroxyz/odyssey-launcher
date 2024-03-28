@@ -4,6 +4,7 @@ use std::path::PathBuf;
 
 use log::debug;
 use serde::{Deserialize, Serialize};
+use tauri::Manager;
 use thiserror::Error;
 
 use super::free_space;
@@ -43,6 +44,9 @@ pub enum DownloadingError {
     /// minreq error
     #[error("minreq error: {0}")]
     Minreq(String),
+
+    #[error("Cancelled")]
+    Cancelled,
 }
 
 impl From<minreq::Error> for DownloadingError {
@@ -140,7 +144,7 @@ impl Downloader {
     pub fn download(
         &mut self,
         path: impl Into<PathBuf>,
-        progress: impl Fn(u64, u64) + Send + 'static,
+        progress: impl Fn(u64, u64) -> Result<(), ()> + Send + 'static,
     ) -> Result<(), DownloadingError> {
         let path = path.into();
 
@@ -248,10 +252,17 @@ impl Downloader {
                 if let Some(range) = request.headers.get("content-range") {
                     // Finish downloading if header says that we've already downloaded all the data
                     if range.contains("*/") {
-                        (progress)(
+                        // let _ = (progress)(
+                        //     self.length.unwrap_or(downloaded as u64),
+                        //     self.length.unwrap_or(downloaded as u64),
+                        // );
+
+                        if let Err(()) = (progress)(
                             self.length.unwrap_or(downloaded as u64),
                             self.length.unwrap_or(downloaded as u64),
-                        );
+                        ) {
+                            return Err(DownloadingError::Cancelled);
+                        }
 
                         return Ok(());
                     }
@@ -266,10 +277,12 @@ impl Downloader {
                 //
                 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/416
                 if request.status_code == 416 {
-                    (progress)(
+                    if let Err(()) = (progress)(
                         self.length.unwrap_or(downloaded as u64),
                         self.length.unwrap_or(downloaded as u64),
-                    );
+                    ) {
+                        return Err(DownloadingError::Cancelled);
+                    }
 
                     return Ok(());
                 }
@@ -288,10 +301,12 @@ impl Downloader {
 
                         downloaded += self.chunk_size;
 
-                        (progress)(
+                        if let Err(()) = (progress)(
                             downloaded as u64,
                             self.length.unwrap_or(expected_len as u64),
-                        );
+                        ) {
+                            return Err(DownloadingError::Cancelled);
+                        }
                     }
                 }
 
@@ -302,7 +317,11 @@ impl Downloader {
 
                     downloaded += chunk.len();
 
-                    (progress)(downloaded as u64, downloaded as u64); // may not be true..?
+                    // let _ = (progress)(downloaded as u64, downloaded as u64); // may not be true..?
+
+                    if let Err(()) = (progress)(downloaded as u64, downloaded as u64) {
+                        return Err(DownloadingError::Cancelled);
+                    }
                 }
 
                 Ok(())

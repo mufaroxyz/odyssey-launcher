@@ -12,30 +12,55 @@ type FilterDeepNonObjects = {
 export interface ApplicationData {
   applicationSettings: ApplicationSettings;
   localGameManifest: LocalGameManifest;
+  installationContext: InstallationContext;
   images: Images;
 }
 
 export interface ClearedApplicationData {
   applicationSettings: Pick<ApplicationSettings, keyof ApplicationSettings>;
   localGameManifest: Pick<LocalGameManifest, keyof LocalGameManifest>;
+  installationContext: Pick<InstallationContext, keyof InstallationContext>;
   images: Pick<Images, keyof Images>;
 }
+
+export type ApplicationDataKeys = keyof (Omit<
+  ApplicationData,
+  "applicationSettings"
+> & {});
+export type ApplicationDataAccessor = ApplicationData[ApplicationDataKeys];
 
 export interface GenshinImpactData {
   path: Path;
 }
 
-export interface ApplicationSettings {
+export type ApplicationSettings = {
   genshinImpactData: GenshinImpactData;
-}
+  playTime: number;
+};
 
 export interface LocalGameManifest {
-  channel: string;
-  cps: string;
-  game_version: string;
-  plugin_7_version: string;
-  sub_channel: string;
-  uapc: string;
+  // channel: string;
+  // cps: string;
+  // game_version: string;
+  // plugin_7_version: string;
+  // sub_channel: string;
+  // uapc: string;
+  version: string;
+}
+
+export interface InstallationContext {
+  isInstalling: boolean;
+  currentStep: number;
+  progressPercentage: number;
+  progressOn: "installing" | "unpacking" | "none";
+  progress: {
+    total: number;
+    current: number;
+  };
+  folders: {
+    game: string;
+    temp: string;
+  };
 }
 
 export interface Advertisement {

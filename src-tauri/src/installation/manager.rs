@@ -11,9 +11,34 @@ use crate::{
 };
 use log::{error, info, trace};
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
+use std::sync::atomic::{AtomicBool, Ordering};
+use tauri::Manager;
 
+use std::sync::Arc;
 use thiserror::Error;
+
+#[derive(Clone, Serialize)]
+struct EmptyPayload {}
+
+#[derive(Clone, Serialize)]
+struct NextStepPayload {
+    step: i32,
+}
+
+#[derive(Clone, Serialize)]
+struct ProgresPayload {
+    percentage: f64,
+    downloaded: u64,
+    total: u64,
+}
+
+#[derive(Clone, Serialize)]
+struct UnpackingPayload {
+    percentage: f64,
+    unpacked: u64,
+    total: u64,
+}
 
 #[derive(Error, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum DiffDownloadingError {
@@ -45,6 +70,9 @@ pub enum DiffDownloadingError {
     /// where this package needs to be installed
     #[error("Path to the component's downloading folder is not specified")]
     PathNotSpecified,
+
+    #[error("Canceled by user")]
+    Canceled,
 }
 
 impl From<minreq::Error> for DiffDownloadingError {
@@ -57,33 +85,40 @@ pub fn install_game(
     diffs: GameLatest,
     installation_path: PathBuf,
     temp_path: PathBuf,
+    app_handle: tauri::AppHandle,
 ) -> Result<(), ()> {
-    info!("Spawning installation thread");
-
     std::thread::spawn(move || {
-        let _ = install_thread(diffs, installation_path, temp_path);
+        let result = install(
+            diffs,
+            installation_path.clone(),
+            temp_path.clone(),
+            app_handle.clone(),
+        );
+
+        if let Err(err) = result {
+            error!("Failed to install game: {:?}", err);
+        }
     });
 
     Ok(())
 }
 
-fn install_thread(
+fn install(
     diffs: GameLatest,
     installation_path: PathBuf,
     temp_path: PathBuf,
+    app_handle: tauri::AppHandle,
 ) -> Result<(), DiffDownloadingError> {
     info!("Getting package segments");
-
-    // TODO: Change this to the actual installation path instead of fixed path for testing
-
-    // let INSTALLATION_PATH: PathBuf = Path::new("M://genshin_loader/").to_path_buf();
-    // let TEMP_PATH: PathBuf = std::env::temp_dir().to_path_buf();
-    // let TEMP_PATH = Path::new("M://temp/").to_path_buf();
 
     println!("Installation Path: {:?}", &installation_path);
     println!("Temp Path: {:?}", &temp_path);
 
-    let segment_urls = diffs
+    app_handle
+        .emit_all("installation-next-step", NextStepPayload { step: 2 })
+        .unwrap();
+
+    let mut segment_urls = diffs
         .segments
         .iter()
         .map(|segment| segment.path.clone())
@@ -91,6 +126,28 @@ fn install_thread(
 
     let downloaded_size = diffs.package_size.parse::<u64>().unwrap();
     let unpacked_size = diffs.size.parse::<u64>().unwrap();
+
+    // Delete everything from installation_path except .version file if the size is smaller than the downloaded size - 1GB
+
+    let size_of_installed = free_space::size_of_folder(&installation_path);
+
+    if size_of_installed < downloaded_size - 1_000_000_000 {
+        info!("Deleting everything from installation folder");
+
+        #[allow(unused_must_use)]
+        {
+            for entry in std::fs::read_dir(&installation_path).unwrap() {
+                let entry = entry.unwrap();
+                let path = entry.path();
+
+                if path.is_file() {
+                    std::fs::remove_file(&path);
+                } else {
+                    std::fs::remove_dir_all(&path);
+                }
+            }
+        }
+    }
 
     info!("Checking free temp space");
 
@@ -140,23 +197,70 @@ fn install_thread(
     let mut segments_names: Vec<String> = Vec::new();
 
     info!("Starting installer: downloading segments");
+    app_handle
+        .emit_all("installation-next-step", NextStepPayload { step: 3 })
+        .unwrap();
+
+    let cancel = Arc::new(AtomicBool::new(false));
+
+    let cancel_clone = Arc::clone(&cancel);
+    app_handle.listen_global("installation-request-pause", move |_event| {
+        cancel_clone.store(true, Ordering::Relaxed);
+    });
 
     for url in segment_urls {
         let mut downloader = Downloader::new(url)?.with_free_space_check(false);
 
-        println!("test");
-
         let local_total = downloader.length().unwrap();
         let segment_name = downloader.get_filename().to_string();
 
-        println!("test");
+        let app_handle_clone: Arc<tauri::AppHandle> = Arc::new(app_handle.clone());
+
+        if cancel.load(Ordering::Relaxed) {
+            return Err(DiffDownloadingError::Canceled);
+        }
+
+        let cancel_clone_inner = Arc::clone(&cancel);
 
         downloader.download(temp_path.join(&segment_name), move |current, _| {
             let curr_downloaded = current_downloaded + current;
-            info!(
-                "Downloading segment: {}/{}",
-                &curr_downloaded, &downloaded_size
-            );
+
+            let percentage = (curr_downloaded as f64 / downloaded_size as f64) * 100.0;
+
+            // if cancel_clone_inner.load(Ordering::Relaxed) {
+            //     app_handle_clone
+            //         .emit_all("installation-paused", EmptyPayload {})
+            //         .unwrap();
+
+            //     return Err(());
+            // }
+
+            if let Err(err) = {
+                if cancel_clone_inner.load(Ordering::Relaxed) {
+                    app_handle_clone
+                        .emit_all("installation-paused", EmptyPayload {})
+                        .unwrap();
+
+                    Err(DiffDownloadingError::Canceled)
+                } else {
+                    Ok(())
+                }
+            } {
+                return Err(());
+            }
+
+            app_handle_clone
+                .emit_all(
+                    "installation-progress",
+                    ProgresPayload {
+                        percentage,
+                        downloaded: curr_downloaded,
+                        total: downloaded_size,
+                    },
+                )
+                .unwrap();
+
+            Ok(())
         })?;
 
         segments_names.push(segment_name);
@@ -165,6 +269,14 @@ fn install_thread(
     }
 
     info!("All segments downloaded");
+
+    if cancel.load(Ordering::Relaxed) {
+        return Err(DiffDownloadingError::Canceled);
+    }
+
+    app_handle
+        .emit_all("installation-next-step", NextStepPayload { step: 4 })
+        .unwrap();
 
     let first_segment_name = segments_names[0].clone();
 
@@ -184,6 +296,9 @@ fn install_thread(
 
             let unpacking_path = installation_path.clone();
 
+            let app_handle_clone: Arc<tauri::AppHandle> = Arc::new(app_handle.clone());
+            let cancel_clone_inner = Arc::clone(&cancel);
+
             let handle_2 = std::thread::spawn(move || {
                 let mut entries = entries
                     .into_iter()
@@ -199,6 +314,14 @@ fn install_thread(
                 let mut unpacked = 0;
 
                 loop {
+                    if cancel_clone_inner.load(Ordering::Relaxed) {
+                        app_handle_clone
+                            .emit_all("installation-paused", EmptyPayload {})
+                            .unwrap();
+
+                        break;
+                    }
+
                     std::thread::sleep(std::time::Duration::from_millis(250));
 
                     let mut empty = true;
@@ -215,7 +338,20 @@ fn install_thread(
                         }
                     }
 
-                    info!("Unpacking: {}/{}", unpacked, total);
+                    let percentage = (unpacked as f64 / total as f64) * 100.0;
+
+                    app_handle_clone
+                        .emit_all(
+                            "installation-unpacking",
+                            UnpackingPayload {
+                                percentage,
+                                unpacked,
+                                total,
+                            },
+                        )
+                        .unwrap();
+
+                    // info!("Unpacking: {}/{}", unpacked, total);
 
                     if empty {
                         break;
@@ -263,6 +399,21 @@ fn install_thread(
             error!("Failed to open archive: {:?}", err);
         }
     }
+
+    app_handle
+        .emit_all("installation-next-step", NextStepPayload { step: 5 })
+        .unwrap();
+
+    #[allow(unused_must_use)]
+    {
+        let version_path = installation_path.join(".version");
+
+        std::fs::write(version_path, diffs.version);
+    }
+
+    app_handle
+        .emit_all("installation-finish", EmptyPayload {})
+        .unwrap();
 
     Ok(())
 }

@@ -60,3 +60,19 @@ pub fn is_same_disk(path1: impl AsRef<Path>, path2: impl AsRef<Path>) -> bool {
 
     false
 }
+
+pub fn size_of_folder(path: impl AsRef<Path>) -> u64 {
+    let mut size = 0;
+
+    for entry in walkdir::WalkDir::new(path)
+        .into_iter()
+        .filter_map(|e| e.ok())
+    {
+        let metadata = entry.metadata().unwrap();
+        if metadata.is_file() {
+            size += metadata.len();
+        }
+    }
+
+    size
+}
