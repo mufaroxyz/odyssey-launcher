@@ -173,6 +173,7 @@ function App() {
               label="Greet"
               className={"!w-fit"}
               acrylic
+              disabled
               icon={<SettingsIcon size={20} />}
             >
               Configure
