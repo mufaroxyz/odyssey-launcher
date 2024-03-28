@@ -162,7 +162,8 @@ export const InstallationScreen = ({
   loadingStates: LoadingState[];
   loading?: boolean;
 }) => {
-  const { installationContext, updateGlobal, getValue } = useApplicationStore();
+  const { installationContext, updateGlobal, getValue, update } =
+    useApplicationStore();
 
   useEffect(() => {
     const unlistenStateMoveRequest = listen(
@@ -242,11 +243,38 @@ export const InstallationScreen = ({
       });
     });
 
+    const installationFinish = listen("installation-finish", () => {
+      const paths = localStorage.getItem("installationPaths");
+      const installationContext = getValue("installationContext");
+
+      if (!paths) return;
+
+      const parsed = JSON.parse(paths);
+
+      update("genshinImpactData", {
+        path: parsed.installationPath,
+      });
+
+      updateGlobal("installationContext", {
+        ...installationContext,
+        ...installationCancelFill,
+        isInstalling: false,
+        currentStep: 0,
+        progressPercentage: 0,
+        progressOn: "none",
+        progress: {
+          current: 0,
+          total: 0,
+        },
+      });
+    });
+
     return () => {
       unlistenStateMoveRequest.then((ul) => ul());
       installationProgress.then((ul) => ul());
       unpackingProgress.then((ul) => ul());
       installationPaused.then((ul) => ul());
+      installationFinish.then((ul) => ul());
     };
   }, [installationContext]);
   return (
