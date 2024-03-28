@@ -14,10 +14,11 @@ export default abstract class KvSettings {
     await store.save();
   }
 
-  static async get<T extends ApplicationSettings[SettingsKeys] | null>(
-    key: SettingsKeys
-  ): Promise<T | null> {
-    return (await store.get(key)) as T | null;
+  static async get<
+    T extends SettingsKeys,
+    R extends ApplicationSettings[T] | null
+  >(key: T): Promise<R | null> {
+    return (await store.get(key)) as R | null;
   }
 
   static async getAll(): Promise<ApplicationSettings> {

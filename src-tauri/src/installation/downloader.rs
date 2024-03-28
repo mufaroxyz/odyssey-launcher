@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 use log::debug;
 use serde::{Deserialize, Serialize};
-use tauri::Manager;
+
 use thiserror::Error;
 
 use super::free_space;

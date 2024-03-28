@@ -22,7 +22,7 @@ export default function FreshInstallModal({
 }: ModalProps & {
   setCurrentModal: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
-  const { updateGlobal, getValue } = useApplicationStore(
+  const { updateGlobal } = useApplicationStore(
     useShallow((s) => ({
       updateGlobal: s.updateGlobal,
       update: s.update,

@@ -118,7 +118,7 @@ fn install(
         .emit_all("installation-next-step", NextStepPayload { step: 2 })
         .unwrap();
 
-    let mut segment_urls = diffs
+    let segment_urls = diffs
         .segments
         .iter()
         .map(|segment| segment.path.clone())
@@ -235,7 +235,7 @@ fn install(
             //     return Err(());
             // }
 
-            if let Err(err) = {
+            if let Err(_) = {
                 if cancel_clone_inner.load(Ordering::Relaxed) {
                     app_handle_clone
                         .emit_all("installation-paused", EmptyPayload {})
