@@ -1,4 +1,4 @@
-import { appWindow } from "@tauri-apps/api/window";
+import { appWindow, getAll } from "@tauri-apps/api/window";
 import { X } from "lucide-react";
 
 export default function WindowDecorations() {
@@ -11,11 +11,13 @@ export default function WindowDecorations() {
         <img src="/icons/icon.png" className="w-6 h-6 mt-2" />
       </div>
       <p data-tauri-drag-region className="text-sm text-white font-semibold">
-        Genshin Loader
+        Odyssey Launcher
       </p>
       <div className="flex justify-end">
         <button
-          onClick={() => appWindow.close()}
+          onClick={async () => {
+            appWindow.hide();
+          }}
           className="inline-flex justify-center rounded-none items-center w-[30px] h-[30px] hover:bg-red-500 hover:bg-opacity-50 transition-colors duration-150 ease-in-out"
         >
           <X size={20} />

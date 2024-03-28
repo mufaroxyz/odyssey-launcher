@@ -7,25 +7,19 @@ use crate::lib::discord_rpc::{DiscordRPC, DiscordRPCState};
 use discord_rich_presence::activity::{Activity, Assets};
 use lib::asset_manager::{AssetManager, AssetManagerState};
 use simple_logger::SimpleLogger;
-use tauri::{
-    CustomMenuItem, Manager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu,
-    SystemTrayMenuItem,
-};
+use tauri::{CustomMenuItem, Manager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
 pub mod commands;
+pub mod game;
 pub mod installation;
 pub mod lib;
 
 fn main() {
     SimpleLogger::new().init().unwrap();
 
-    let start_game = CustomMenuItem::new("start_game".to_string(), "Start Game");
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
 
-    let tray_menu = SystemTrayMenu::new()
-        .add_item(start_game)
-        .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(quit);
+    let tray_menu = SystemTrayMenu::new().add_item(quit);
     let system_tray = SystemTray::new()
         .with_menu(tray_menu)
         .with_icon(tauri::Icon::Raw(
@@ -38,12 +32,17 @@ fn main() {
     tauri::Builder::default()
         .system_tray(system_tray)
         .on_system_tray_event(|app, event| match event {
-            SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-                "quit" => {
-                    std::process::exit(0);
+            SystemTrayEvent::MenuItemClick { id, .. } => {
+                let main_window = app.get_window("main").expect("main window");
+
+                match id.as_str() {
+                    "quit" => {
+                        std::process::exit(0);
+                    }
+                    "show_window" => main_window.show().unwrap(),
+                    _ => {}
                 }
-                _ => {}
-            },
+            }
             SystemTrayEvent::LeftClick { .. } => {
                 let window = match app.get_window("main") {
                     Some(window) => match window.is_visible().expect("winvis") {
@@ -62,6 +61,8 @@ fn main() {
         })
         .on_window_event(|event| match event.event() {
             tauri::WindowEvent::CloseRequested { api, .. } => {
+                println!("Close requested");
+
                 event.window().hide().unwrap();
                 api.prevent_close();
             }
@@ -75,6 +76,7 @@ fn main() {
             commands::io::find_installation_path,
             commands::io::ensure_installation_path,
             commands::io::fetch_local_manifest,
+            commands::io::get_executable_path,
             commands::application_executor::start_game,
             commands::assets::fetch_images,
             commands::installation::game_install,
@@ -92,14 +94,12 @@ fn main() {
 
                 let activity = Activity::new()
                     .state("In launcher")
-                    .details("Home screen - Genshin v4.5.0")
+                    .details("Home screen")
                     .assets(assets);
 
                 let _ = state.set_activity(activity);
             }
-            RunEvent::ExitRequested { api, .. } => {
-                api.prevent_exit();
-            }
+
             _ => {}
         });
 }
