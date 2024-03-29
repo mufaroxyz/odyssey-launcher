@@ -1,0 +1,41 @@
+name: tests
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: tests
+    strategy:
+      fail-fast: false
+
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: canary
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Dependencies
+        run: bun install
+
+      - name: format
+        run: bun run format
+
+      - name: Check Formatting
+        run: bun run format:check
+
+      - name: Check Linting
+        run: bun run lint
+
+      - name: Build
+        run: bun run build

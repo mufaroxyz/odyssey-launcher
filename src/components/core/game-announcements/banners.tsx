@@ -1,18 +1,18 @@
-import { useShallow } from "zustand/react/shallow";
-import useApplicationStore from "../../state/application-state";
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { useShallow } from 'zustand/react/shallow';
+import useApplicationStore from '../../state/application-state';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { convertFileSrc } from '@tauri-apps/api/tauri';
 
 const sliderVariants = {
   incoming: (direction: number) => ({
-    x: direction > 0 ? "100%" : "-100%",
+    x: direction > 0 ? '100%' : '-100%',
     scale: 1.2,
     opacity: 0,
   }),
   active: { x: 0, scale: 1, opacity: 1 },
   exit: (direction: number) => ({
-    x: direction > 0 ? "-100%" : "100%",
+    x: direction > 0 ? '-100%' : '100%',
     scale: 1,
     opacity: 0.2,
   }),
@@ -27,7 +27,7 @@ export default function ScrollingBanners() {
   const { images } = useApplicationStore(
     useShallow((state) => ({
       images: state.images.banner,
-    }))
+    })),
   );
 
   const [currentImage, setCurrentImage] = useState(0);
@@ -76,7 +76,7 @@ export default function ScrollingBanners() {
                 skipToImage(i - 1);
               }}
               transition={{
-                type: "spring",
+                type: 'spring',
                 stiffness: 200,
                 stagger: 50,
               }}

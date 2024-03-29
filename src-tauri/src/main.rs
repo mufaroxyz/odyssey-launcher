@@ -1,21 +1,85 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::sync::{Arc, Mutex};
+use std::{
+    os::windows::process::CommandExt,
+    process::Command,
+    sync::{Arc, Mutex},
+};
+
+const DETACHED_PROCESS: u32 = 0x00000008;
 
 use crate::lib::discord_rpc::{DiscordRPC, DiscordRPCState};
 use discord_rich_presence::activity::{Activity, Assets};
 use lib::asset_manager::{AssetManager, AssetManagerState};
-use simple_logger::SimpleLogger;
 use tauri::{CustomMenuItem, Manager, RunEvent, SystemTray, SystemTrayEvent, SystemTrayMenu};
+
+#[macro_use]
+extern crate log;
+extern crate simplelog;
+
+use simplelog::*;
 
 pub mod commands;
 pub mod game;
 pub mod installation;
 pub mod lib;
 
+#[derive(Clone, Copy)]
+pub struct GameInstallingState {
+    pub is_installing: bool,
+    pub step: i32,
+}
+
+pub struct IsGameInstallingState(Arc<Mutex<GameInstallingState>>);
+
 fn main() {
-    SimpleLogger::new().init().unwrap();
+    CombinedLogger::init(vec![
+        TermLogger::new(
+            LevelFilter::Info,
+            Config::default(),
+            TerminalMode::Mixed,
+            ColorChoice::Auto,
+        ),
+        WriteLogger::new(
+            LevelFilter::Info,
+            Config::default(),
+            std::fs::File::create("odyssey-launcher.log").unwrap(),
+        ),
+    ])
+    .unwrap();
+
+    let is_7z_installed_winget = Command::new("winget")
+        .args(&["list", "-q", "7zip.7zip"])
+        .creation_flags(DETACHED_PROCESS)
+        .output();
+
+    if is_7z_installed_winget.is_err() || !is_7z_installed_winget.unwrap().status.success() {
+        let _ = msgbox::create(
+            "Odyssey Launcher",
+            "7-Zip is not installed, installing now.",
+            msgbox::IconType::None,
+        );
+
+        let install_7z = Command::new("winget")
+            .args(&["install", "-e", "--id", "7zip.7zip", "--silent"])
+            .creation_flags(DETACHED_PROCESS)
+            .output();
+
+        if install_7z.is_err() {
+            let _ = msgbox::create(
+                "Odyssey Launcher",
+                "7-Zip is not installed, please install it before running Odyssey Launcher",
+                msgbox::IconType::Error,
+            );
+            log::error!(
+                "7-Zip is not installed, please install it before running Odyssey Launcher"
+            );
+            std::process::exit(1);
+        }
+    }
+
+    info!("Starting Odyssey Launcher");
 
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
 
@@ -69,6 +133,12 @@ fn main() {
         .plugin(tauri_plugin_store::Builder::default().build())
         .manage(DiscordRPCState(Arc::new(Mutex::new(discord_rpc))))
         .manage(AssetManagerState(Arc::new(Mutex::new(asset_manager))))
+        .manage(IsGameInstallingState(Arc::new(Mutex::new(
+            GameInstallingState {
+                is_installing: false,
+                step: 0,
+            },
+        ))))
         .invoke_handler(tauri::generate_handler![
             commands::hello_world::hello_world,
             commands::utils::send_notification,
@@ -76,6 +146,7 @@ fn main() {
             commands::io::ensure_installation_path,
             commands::io::fetch_local_manifest,
             commands::io::get_executable_path,
+            commands::io::uninstall_game,
             commands::application_executor::start_game,
             commands::assets::fetch_images,
             commands::installation::game_install,

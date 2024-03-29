@@ -7,13 +7,13 @@
   },
   "package": {
     "productName": "Odyssey Launcher",
-    "version": "0.0.6"
+    "version": "0.0.7"
   },
   "tauri": {
     "updater": {
       "active": true,
       "endpoints": [
-        "https://genshin-loader-updater.mufaro.workers.dev/check/mufaroxyz/genshin-loader/{{target}}/{{arch}}/{{current_version}}"
+        "https://genshin-loader-updater.mufaro.workers.dev/check/mufaroxyz/odyssey-launcher/{{target}}/{{arch}}/{{current_version}}"
       ],
       "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVCMDdCNkU1MkExQTUxNTQKUldSVVVSb3E1YllINjdiYTNRVXVFSEJWYnExVHFUYVEvbFZzb05OWjdQTmxPckV3UWhrWHVNTFoK"
@@ -21,6 +21,12 @@
     "macOSPrivateApi": true,
     "allowlist": {
       "all": false,
+      "process": {
+        "all": false,
+        "exit": false,
+        "relaunch": true,
+        "relaunchDangerousAllowSymlinkMacos": false
+      },
       "notification": {
         "all": true
       },

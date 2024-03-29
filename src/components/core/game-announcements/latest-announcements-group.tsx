@@ -1,6 +1,6 @@
-import ScrollingBanners from "./banners";
-import Notifications from "./notifications";
-import { motion } from "framer-motion";
+import ScrollingBanners from './banners';
+import Notifications from './notifications';
+import { motion } from 'framer-motion';
 
 export default function LatestAnnouncementsGroup() {
   return (
@@ -8,7 +8,7 @@ export default function LatestAnnouncementsGroup() {
       initial={{ x: -20 }}
       animate={{ x: 0 }}
       transition={{
-        type: "spring",
+        type: 'spring',
       }}
       className="absolute bottom-10 left-10 w-[400px] overflow-hidden"
     >

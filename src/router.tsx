@@ -1,10 +1,10 @@
-import { HashRouter, Route, Routes } from "react-router-dom";
-import App from "./routes/app";
-import LoadingOverlay from "./components/layouts/loading-layout";
-import RootLayout from "./components/layouts/root-layout";
-import NotFound from "./routes/not-found";
-import AnimationLayout from "./components/layouts/animation-layout";
-import Packages from "./routes/packages";
+import { HashRouter, Route, Routes } from 'react-router-dom';
+import App from './routes/app';
+import LoadingOverlay from './components/layouts/loading-layout';
+import RootLayout from './components/layouts/root-layout';
+import NotFound from './routes/not-found';
+import AnimationLayout from './components/layouts/animation-layout';
+import Packages from './routes/packages';
 
 export default () => (
   <HashRouter>

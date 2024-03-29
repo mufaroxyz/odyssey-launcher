@@ -23,10 +23,7 @@ export interface ClearedApplicationData {
   images: Pick<Images, keyof Images>;
 }
 
-export type ApplicationDataKeys = keyof (Omit<
-  ApplicationData,
-  "applicationSettings"
-> & {});
+export type ApplicationDataKeys = keyof (Omit<ApplicationData, 'applicationSettings'> & object);
 export type ApplicationDataAccessor = ApplicationData[ApplicationDataKeys];
 
 export interface GenshinImpactData {
@@ -36,6 +33,7 @@ export interface GenshinImpactData {
 export type ApplicationSettings = {
   genshinImpactData: GenshinImpactData;
   playTime: number;
+  lastInstallationStep: number;
 };
 
 export interface LocalGameManifest {
@@ -52,7 +50,7 @@ export interface InstallationContext {
   isInstalling: boolean;
   currentStep: number;
   progressPercentage: number;
-  progressOn: "installing" | "unpacking" | "none";
+  progressOn: 'installing' | 'unpacking' | 'none';
   progress: {
     total: number;
     current: number;

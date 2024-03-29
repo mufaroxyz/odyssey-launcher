@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import Draggable from "react-draggable";
+import { useEffect, useState } from 'react';
+import Draggable from 'react-draggable';
 
 function DrawFPS() {
   const [fps, setFps] = useState(0);
@@ -21,13 +21,11 @@ function DrawFPS() {
   return <div className="font-mono">{fps} fps</div>;
 }
 
-export default function DebugOverlay({ objectData }: { objectData?: any }) {
+export default function DebugOverlay({ objectData }: { objectData?: object }) {
   return (
     <Draggable>
       <div className="fixed  text-white text-xs bg-black bg-opacity-50 z-50 rounded-md">
-        <div className="cursor-move select-none bg-sky-800 bg-opacity-70 h-4 w-full font-mono">
-          Debug Overlay
-        </div>
+        <div className="cursor-move select-none bg-sky-800 bg-opacity-70 h-4 w-full font-mono">Debug Overlay</div>
         <div className="p-2 ">
           <DrawFPS />
           {objectData && (

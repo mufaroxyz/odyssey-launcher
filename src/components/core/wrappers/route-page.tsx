@@ -1,6 +1,6 @@
-import React from "react";
-import { cn } from "../../../lib/utils";
-import { motion } from "framer-motion";
+import React from 'react';
+import { cn } from '../../../lib/utils';
+import { motion } from 'framer-motion';
 
 export default function RoutePage({
   children,
@@ -20,10 +20,7 @@ export default function RoutePage({
           x: 0,
         }}
         exit={{ opacity: 0, x: 20 }}
-        className={cn(
-          "flex-auto bg-bg-color rounded-tl-xl overflow-hidden relative",
-          className
-        )}
+        className={cn('flex-auto bg-bg-color rounded-tl-xl overflow-hidden relative', className)}
       >
         <motion.img
           initial={{ scale: 0.9 }}
@@ -31,7 +28,7 @@ export default function RoutePage({
             scale: 1,
             transition: {
               duration: 0.25,
-              type: "spring",
+              type: 'spring',
               stiffness: 260,
               damping: 20,
             },
@@ -40,12 +37,7 @@ export default function RoutePage({
           src={backgroundImage}
           className="w-full h-full bg-cover bg-center bg-no-repeat"
         />
-        <div
-          className={cn(
-            "absolute top-0 left-0 h-full w-full flex flex-col justify-between",
-            className
-          )}
-        >
+        <div className={cn('absolute top-0 left-0 h-full w-full flex flex-col justify-between', className)}>
           {children}
         </div>
       </motion.div>
@@ -57,10 +49,7 @@ export default function RoutePage({
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
-      className={cn(
-        "flex-auto h-full w-full flex bg-bg-color rounded-tl-xl overflow-hidden relative",
-        className
-      )}
+      className={cn('flex-auto h-full w-full flex bg-bg-color rounded-tl-xl overflow-hidden relative', className)}
     >
       {children}
     </motion.div>

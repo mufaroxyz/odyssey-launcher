@@ -1,18 +1,21 @@
-/**
- * The installation process is implemented by An Anime Team, i just skidded it and modified a little for Windows
- *
- * >>> https://github.com/an-anime-team/anime-game-core
- */
 use crate::installation::archive::Archive;
 use crate::installation::downloader::DownloadingError;
 use crate::{
     installation::{downloader::Downloader, free_space},
     lib::asset_manager::GameLatest,
 };
+use crate::{GameInstallingState, IsGameInstallingState};
 use log::{error, info, trace};
 use serde::{Deserialize, Serialize};
+use std::cell::Cell;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
+/**
+ * The installation process is implemented by An Anime Team, i just skidded it and modified a little for Windows
+ *
+ * >>> https://github.com/an-anime-team/anime-game-core
+ */
+use std::time::{Duration, Instant};
 use tauri::Manager;
 
 use std::sync::Arc;
@@ -114,6 +117,11 @@ fn install(
     println!("Installation Path: {:?}", &installation_path);
     println!("Temp Path: {:?}", &temp_path);
 
+    let game_installing_state = &app_handle.state::<IsGameInstallingState>();
+    let mut game_installing_state = *game_installing_state.0.lock().unwrap();
+
+    game_installing_state.step = 2;
+
     app_handle
         .emit_all("installation-next-step", NextStepPayload { step: 2 })
         .unwrap();
@@ -197,16 +205,12 @@ fn install(
     let mut segments_names: Vec<String> = Vec::new();
 
     info!("Starting installer: downloading segments");
+
+    game_installing_state.step = 3;
+
     app_handle
         .emit_all("installation-next-step", NextStepPayload { step: 3 })
         .unwrap();
-
-    let cancel = Arc::new(AtomicBool::new(false));
-
-    let cancel_clone = Arc::clone(&cancel);
-    app_handle.listen_global("installation-request-pause", move |_event| {
-        cancel_clone.store(true, Ordering::Relaxed);
-    });
 
     for url in segment_urls {
         let mut downloader = Downloader::new(url)?.with_free_space_check(false);
@@ -216,49 +220,27 @@ fn install(
 
         let app_handle_clone: Arc<tauri::AppHandle> = Arc::new(app_handle.clone());
 
-        if cancel.load(Ordering::Relaxed) {
-            return Err(DiffDownloadingError::Canceled);
-        }
-
-        let cancel_clone_inner = Arc::clone(&cancel);
+        let last_emit = Cell::new(Instant::now());
 
         downloader.download(temp_path.join(&segment_name), move |current, _| {
             let curr_downloaded = current_downloaded + current;
 
             let percentage = (curr_downloaded as f64 / downloaded_size as f64) * 100.0;
 
-            // if cancel_clone_inner.load(Ordering::Relaxed) {
-            //     app_handle_clone
-            //         .emit_all("installation-paused", EmptyPayload {})
-            //         .unwrap();
+            if last_emit.get().elapsed() >= Duration::from_secs(1) {
+                app_handle_clone
+                    .emit_all(
+                        "installation-progress",
+                        ProgresPayload {
+                            percentage,
+                            downloaded: curr_downloaded,
+                            total: downloaded_size,
+                        },
+                    )
+                    .unwrap();
 
-            //     return Err(());
-            // }
-
-            if let Err(_) = {
-                if cancel_clone_inner.load(Ordering::Relaxed) {
-                    app_handle_clone
-                        .emit_all("installation-paused", EmptyPayload {})
-                        .unwrap();
-
-                    Err(DiffDownloadingError::Canceled)
-                } else {
-                    Ok(())
-                }
-            } {
-                return Err(());
+                last_emit.set(Instant::now());
             }
-
-            app_handle_clone
-                .emit_all(
-                    "installation-progress",
-                    ProgresPayload {
-                        percentage,
-                        downloaded: curr_downloaded,
-                        total: downloaded_size,
-                    },
-                )
-                .unwrap();
 
             Ok(())
         })?;
@@ -270,15 +252,13 @@ fn install(
 
     info!("All segments downloaded");
 
-    if cancel.load(Ordering::Relaxed) {
-        return Err(DiffDownloadingError::Canceled);
-    }
-
     app_handle
         .emit_all("installation-next-step", NextStepPayload { step: 4 })
         .unwrap();
 
     let first_segment_name = segments_names[0].clone();
+
+    let last_emit = Cell::new(Instant::now());
 
     match Archive::open(temp_path.join(&first_segment_name)) {
         Ok(mut archive) => {
@@ -292,12 +272,11 @@ fn install(
                 // let path = installation_path.join(&entry.name);
             }
 
-            trace!("Extracting archive");
+            info!("Extracting archive");
 
             let unpacking_path = installation_path.clone();
 
             let app_handle_clone: Arc<tauri::AppHandle> = Arc::new(app_handle.clone());
-            let cancel_clone_inner = Arc::clone(&cancel);
 
             let handle_2 = std::thread::spawn(move || {
                 let mut entries = entries
@@ -314,15 +293,24 @@ fn install(
                 let mut unpacked = 0;
 
                 loop {
-                    if cancel_clone_inner.load(Ordering::Relaxed) {
+                    std::thread::sleep(std::time::Duration::from_millis(250));
+
+                    if last_emit.get().elapsed() >= Duration::from_secs(1) {
+                        let percentage = (unpacked as f64 / total as f64) * 100.0;
+
                         app_handle_clone
-                            .emit_all("installation-paused", EmptyPayload {})
+                            .emit_all(
+                                "installation-unpacking",
+                                UnpackingPayload {
+                                    percentage,
+                                    unpacked,
+                                    total,
+                                },
+                            )
                             .unwrap();
 
-                        break;
+                        last_emit.set(Instant::now());
                     }
-
-                    std::thread::sleep(std::time::Duration::from_millis(250));
 
                     let mut empty = true;
 
@@ -397,8 +385,16 @@ fn install(
 
         Err(err) => {
             error!("Failed to open archive: {:?}", err);
+            return Err(DiffDownloadingError::DownloadingError(
+                DownloadingError::OutputFileError(
+                    temp_path.join(first_segment_name),
+                    err.to_string(),
+                ),
+            ));
         }
     }
+
+    game_installing_state.step = 5;
 
     app_handle
         .emit_all("installation-next-step", NextStepPayload { step: 5 })
