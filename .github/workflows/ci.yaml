@@ -9,6 +9,7 @@ on:
 
 jobs:
   CI:
+    name: CI
     strategy:
       fail-fast: false
 
