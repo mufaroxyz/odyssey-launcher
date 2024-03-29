@@ -25,13 +25,16 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install Dependencies
-        run: bun install
+        run: bun run install
+
+      - name: format
+        run: bun run format
 
       - name: Check Formatting
-        run: bun format:check
+        run: bun run format:check
 
       - name: Check Linting
-        run: bun lint
+        run: bun run lint
 
       - name: Build
-        run: bun build
+        run: bun run build
