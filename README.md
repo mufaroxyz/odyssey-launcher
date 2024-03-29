@@ -15,9 +15,26 @@ You can download the latest release from the [GitHub releases page](https://gith
 - [ ] Built-in FPS Unlocker
 - [ ] Mod Management (Using Game Banana)
 
+## Errors
+
+If you encounter any errors, please open an issue with the error message and the steps to reproduce the error.
+Remember to prompt the log file located at the launcher's directory.
+
+Here are some common errors and how to fix them:
+
+### Error: `Always tries to install 7zip on startup`
+
+Open the `cmd` and run the following command:
+
+```bash
+winget
+```
+
+It should output a confirmation prompt for agreeing to the license, simply type `Y` and press enter.
+
 ## Development
 
-This project was bootstrapped with Tauri. Uses Typescript + Preact + Rust. 
+This project was bootstrapped with Tauri. Uses Typescript + React + Rust. 
 
 ### Recommended IDE Setup
 
