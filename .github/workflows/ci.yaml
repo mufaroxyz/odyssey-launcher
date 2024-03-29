@@ -8,8 +8,8 @@ on:
       - main
 
 jobs:
-  CI:
-    name: CI
+  build:
+    name: tests
     strategy:
       fail-fast: false
 
