@@ -1,19 +1,19 @@
-import { ErrorBoundary } from "react-error-boundary";
-import LoadingScreen from "../components/core/loading-screen";
-import useApplicationStore from "../components/state/application-state";
-import { Button } from "../components/ui/button";
-import { Clock, Download, Play, SettingsIcon, Trash2 } from "lucide-react";
-import RoutePage from "../components/core/wrappers/route-page";
-import LatestAnnouncementsGroup from "../components/core/game-announcements/latest-announcements-group";
-import { AnimatePresence, motion } from "framer-motion";
-import AutoDetectedPathModal from "../components/core/installation/auto-detected-path.modal";
-import { useState } from "react";
-import { convertFileSrc, invoke } from "@tauri-apps/api/tauri";
-import { tauriInvoke } from "../lib/utils";
-import { TauriRoutes } from "../lib/ptypes";
-import FreshInstallModal from "../components/core/installation/fresh-install.modal";
-import { InstallationScreen } from "../components/core/installation/installation-screen";
-import UninstallModal from "../components/core/installation/uninstall.modal";
+import { ErrorBoundary } from 'react-error-boundary';
+import LoadingScreen from '../components/core/loading-screen';
+import useApplicationStore from '../components/state/application-state';
+import { Button } from '../components/ui/button';
+import { Clock, Download, Play, SettingsIcon, Trash2 } from 'lucide-react';
+import RoutePage from '../components/core/wrappers/route-page';
+import LatestAnnouncementsGroup from '../components/core/game-announcements/latest-announcements-group';
+import { AnimatePresence, motion } from 'framer-motion';
+import AutoDetectedPathModal from '../components/core/installation/auto-detected-path.modal';
+import { useState } from 'react';
+import { convertFileSrc, invoke } from '@tauri-apps/api/tauri';
+import { tauriInvoke } from '../lib/utils';
+import { TauriRoutes } from '../lib/ptypes';
+import FreshInstallModal from '../components/core/installation/fresh-install.modal';
+import { InstallationScreen } from '../components/core/installation/installation-screen';
+import UninstallModal from '../components/core/installation/uninstall.modal';
 
 const container = {
   hidden: { opacity: 0 },
@@ -34,7 +34,7 @@ const configureItemVariants = {
   open: {
     opacity: 1,
     y: 0,
-    transition: { type: "spring", stiffness: 500, damping: 24 },
+    transition: { type: 'spring', stiffness: 500, damping: 24 },
   },
   closed: { opacity: 0, y: 20, transition: { duration: 0.2 } },
 };
@@ -50,12 +50,7 @@ function App() {
   const [currentModal, setCurrentModal] = useState<string | null>(null);
   const [configureOpen, setConfigureOpen] = useState(false);
 
-  const {
-    applicationSettings,
-    localGameManifest,
-    installationContext,
-    images,
-  } = useApplicationStore();
+  const { applicationSettings, localGameManifest, installationContext, images } = useApplicationStore();
 
   const applicationData = {
     applicationSettings,
@@ -65,25 +60,25 @@ function App() {
 
   async function installGame() {
     const isWorthDetecting = await tauriInvoke(TauriRoutes.FindInstallationPath)
-      .then((_) => true)
-      .catch((_) => false);
+      .then(() => true)
+      .catch(() => false);
 
     if (isWorthDetecting) {
-      setCurrentModal("auto-detected-path");
+      setCurrentModal('auto-detected-path');
       return;
     }
 
-    setCurrentModal("fresh-install");
+    setCurrentModal('fresh-install');
   }
 
   async function startGame() {
     if (applicationData.applicationSettings.genshinImpactData.path) {
-      await invoke("start_game", {
+      await invoke('start_game', {
         path: applicationData.applicationSettings.genshinImpactData.path,
       });
       return;
     } else {
-      console.error("No path detected.");
+      console.error('No path detected.');
     }
   }
 
@@ -101,7 +96,7 @@ function App() {
     >
       <LoadingScreen />
       <AutoDetectedPathModal
-        open={currentModal === "auto-detected-path"}
+        open={currentModal === 'auto-detected-path'}
         onOpenChange={(open) => {
           if (!open) {
             setCurrentModal(null);
@@ -110,7 +105,7 @@ function App() {
         setCurrentModal={setCurrentModal}
       />
       <FreshInstallModal
-        open={currentModal === "fresh-install"}
+        open={currentModal === 'fresh-install'}
         onOpenChange={(open) => {
           if (!open) {
             setCurrentModal(null);
@@ -119,29 +114,26 @@ function App() {
         setCurrentModal={setCurrentModal}
       />
 
-      <RoutePage
-        backgroundImage={convertFileSrc(applicationData.images.adv.background)}
-        className="flex-row"
-      >
+      <RoutePage backgroundImage={convertFileSrc(applicationData.images.adv.background)} className="flex-row">
         <InstallationScreen
           loadingStates={[
             {
-              text: "Starting installation process",
+              text: 'Starting installation process',
             },
             {
-              text: "Fetching game resources",
+              text: 'Fetching game resources',
             },
             {
-              text: "Calculating disk space",
+              text: 'Calculating disk space',
             },
             {
-              text: "Downloading game files",
+              text: 'Downloading game files',
             },
             {
-              text: "Unpacking game files",
+              text: 'Unpacking game files',
             },
             {
-              text: "Finalizing installation",
+              text: 'Finalizing installation',
             },
           ]}
           loading={installationContext.isInstalling}
@@ -149,44 +141,19 @@ function App() {
         <div className="flex-1 flex flex-col">
           <LatestAnnouncementsGroup />
         </div>
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className={"p-4 flex gap-2 self-end"}
-        >
+        <motion.div variants={container} initial="hidden" animate="show" className={'p-4 flex gap-2 self-end'}>
           <motion.div variants={item}>
-            <Button
-              variant="dark"
-              label="Greet"
-              className={"!w-fit"}
-              acrylic
-              icon={<Clock size={20} />}
-            >
-              {
-                getHoursAndMinutesFromSeconds(
-                  applicationData.applicationSettings.playTime
-                ).hours
-              }
-              h{" "}
-              {
-                getHoursAndMinutesFromSeconds(
-                  applicationData.applicationSettings.playTime
-                ).minutes
-              }
-              m
+            <Button variant="dark" label="Greet" className={'!w-fit'} acrylic icon={<Clock size={20} />}>
+              {getHoursAndMinutesFromSeconds(applicationData.applicationSettings.playTime).hours}h{' '}
+              {getHoursAndMinutesFromSeconds(applicationData.applicationSettings.playTime).minutes}m
             </Button>
           </motion.div>
 
-          <motion.div
-            animate={configureOpen ? "open" : "closed"}
-            variants={item}
-            className="relative w-32"
-          >
+          <motion.div animate={configureOpen ? 'open' : 'closed'} variants={item} className="relative w-32">
             <Button
               variant="dark"
               label="Greet"
-              className={"!w-fit"}
+              className={'!w-fit'}
               acrylic
               onClick={() => setConfigureOpen(!configureOpen)}
               icon={<SettingsIcon size={20} />}
@@ -200,9 +167,9 @@ function App() {
                     scaleX: 1,
                     scaleY: 1,
                     originY: 1,
-                    translateX: "1.5rem",
+                    translateX: '1.5rem',
                     transition: {
-                      type: "spring",
+                      type: 'spring',
                       bounce: 0,
                       duration: 0.3,
                       delayChildren: 0.1,
@@ -213,9 +180,9 @@ function App() {
                     scaleX: 0,
                     scaleY: 0,
                     originY: 1,
-                    translateX: "1.5rem",
+                    translateX: '1.5rem',
                     transition: {
-                      type: "spring",
+                      type: 'spring',
                       bounce: 0,
                       duration: 0.3,
                     },
@@ -241,24 +208,16 @@ function App() {
           <motion.div variants={item}>
             <Button
               onClick={() => {
-                applicationData.applicationSettings.genshinImpactData.path
-                  ? startGame()
-                  : installGame();
+                applicationData.applicationSettings.genshinImpactData.path ? startGame() : installGame();
               }}
               variant="accent"
               label="Greet"
               icon={
-                applicationData.applicationSettings.genshinImpactData.path ? (
-                  <Play size={20} />
-                ) : (
-                  <Download size={20} />
-                )
+                applicationData.applicationSettings.genshinImpactData.path ? <Play size={20} /> : <Download size={20} />
               }
-              className={"!w-fit"}
+              className={'!w-fit'}
             >
-              {applicationData.applicationSettings.genshinImpactData.path
-                ? "Launch"
-                : "Install Game"}
+              {applicationData.applicationSettings.genshinImpactData.path ? 'Launch' : 'Install Game'}
             </Button>
           </motion.div>
         </motion.div>

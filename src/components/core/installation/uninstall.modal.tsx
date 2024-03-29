@@ -1,29 +1,18 @@
-import { useShallow } from "zustand/react/shallow";
-import useApplicationStore from "../../state/application-state";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFactualContent,
-  DialogFooter,
-  DialogTrigger,
-} from "../../ui/dialog";
-import { Button } from "../../ui/button";
-import { tauriInvoke } from "../../../lib/utils";
-import { TauriRoutes } from "../../../lib/ptypes";
-import { useState } from "react";
+import { useShallow } from 'zustand/react/shallow';
+import useApplicationStore from '../../state/application-state';
+import { Dialog, DialogClose, DialogContent, DialogFactualContent, DialogFooter, DialogTrigger } from '../../ui/dialog';
+import { Button } from '../../ui/button';
+import { tauriInvoke } from '../../../lib/utils';
+import { TauriRoutes } from '../../../lib/ptypes';
+import { useState } from 'react';
 
-export default function UninstallModal({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function UninstallModal({ children }: { children: React.ReactNode }) {
   const [isUninstalling, setIsUninstalling] = useState(false);
   const [uninstalled, setUninstalled] = useState(false);
   const { path } = useApplicationStore(
     useShallow((s) => ({
-      path: s.applicationSettings.genshinImpactData.path.replace(/\\/g, "/"),
-    }))
+      path: s.applicationSettings.genshinImpactData.path.replace(/\\/g, '/'),
+    })),
   );
 
   async function uninstallGame() {
@@ -35,7 +24,7 @@ export default function UninstallModal({
       .then((r) => r.status)
       .catch((e) => e);
 
-    if (result === "success") {
+    if (result === 'success') {
       setUninstalled(true);
     }
 
@@ -50,9 +39,7 @@ export default function UninstallModal({
           {isUninstalling ? (
             <>
               <p className="text-3xl font-bold">Uninstalling...</p>
-              <p className="mt-2">
-                Please wait while Genshin Impact is uninstalled
-              </p>
+              <p className="mt-2">Please wait while Genshin Impact is uninstalled</p>
             </>
           ) : uninstalled ? (
             <>

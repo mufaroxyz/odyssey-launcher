@@ -1,7 +1,7 @@
-import { appWindow } from "@tauri-apps/api/window";
-import { X } from "lucide-react";
-import { tauriInvoke } from "../../../lib/utils";
-import { TauriRoutes } from "../../../lib/ptypes";
+import { appWindow } from '@tauri-apps/api/window';
+import { X } from 'lucide-react';
+import { tauriInvoke } from '../../../lib/utils';
+import { TauriRoutes } from '../../../lib/ptypes';
 
 export default function WindowDecorations() {
   return (
@@ -19,8 +19,8 @@ export default function WindowDecorations() {
         <button
           onClick={async () => {
             tauriInvoke(TauriRoutes.SendNotification, {
-              title: "Odyssey Launcher",
-              body: "Minimized the application to the tray menu.",
+              title: 'Odyssey Launcher',
+              body: 'Minimized the application to the tray menu.',
             });
             appWindow.hide();
           }}

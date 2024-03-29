@@ -1,9 +1,9 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { cn } from "../../lib/utils";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { cn } from '../../lib/utils';
 
 interface ButtonProps {
-  variant: "filled" | "tonal" | "text" | "outlined" | "accent" | "dark";
+  variant: 'filled' | 'tonal' | 'text' | 'outlined' | 'accent' | 'dark';
   acrylic?: boolean;
   disabled?: boolean;
   icon?: React.ReactNode;
@@ -12,9 +12,7 @@ interface ButtonProps {
   children: React.ReactNode;
 }
 
-export const Button: React.FC<
-  ButtonProps & React.HTMLAttributes<HTMLButtonElement | HTMLAnchorElement>
-> = ({
+export const Button: React.FC<ButtonProps & React.HTMLAttributes<HTMLButtonElement | HTMLAnchorElement>> = ({
   href,
   variant,
   label,
@@ -35,9 +33,7 @@ export const Button: React.FC<
         }}
       >
         <span
-          className={`button-${variant} ${acrylic && "button-style-acrylic"} ${
-            disabled && "button-disabled"
-          }`}
+          className={`button-${variant} ${acrylic && 'button-style-acrylic'} ${disabled && 'button-disabled'}`}
           aria-label={label}
         >
           {/* {icon && <img src={`/icons/${icon}`} alt={label} />} */}
@@ -55,10 +51,8 @@ export const Button: React.FC<
         else onClick && onClick(e);
       }}
       className={cn(
-        `button-${variant} ${acrylic && "button-style-acrylic"} ${
-          disabled && "button-disabled"
-        }`,
-        className
+        `button-${variant} ${acrylic && 'button-style-acrylic'} ${disabled && 'button-disabled'}`,
+        className,
       )}
       aria-label={label}
     >

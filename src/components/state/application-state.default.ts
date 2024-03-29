@@ -1,12 +1,12 @@
 export const defaultLocalGameManifest = {
-  version: "",
+  version: '',
 };
 
 export const defaultImages = {
   adv: {
-    background: "",
-    icon: "",
-    url: "",
+    background: '',
+    icon: '',
+    url: '',
   },
   banner: [],
   post: [],
@@ -14,7 +14,7 @@ export const defaultImages = {
 
 export const defaultApplicationSettings = {
   genshinImpactData: {
-    path: "",
+    path: '',
   },
   playTime: 0,
   lastInstallationStep: 0,
@@ -24,14 +24,14 @@ export const defaultInstallationContext = {
   isInstalling: false,
   currentStep: 0,
   progressPercentage: 0,
-  progressOn: "none" as const,
+  progressOn: 'none' as const,
   progress: {
     total: 0,
     current: 0,
   },
   folders: {
-    game: "",
-    temp: "",
+    game: '',
+    temp: '',
   },
 };
 

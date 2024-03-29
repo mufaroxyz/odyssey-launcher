@@ -9,11 +9,10 @@ edition = "2021"
 
 [build-dependencies]
 tauri-build = { version = "1", features = [] }
-embed-resource = "2.4.2"
-
 
 [dependencies]
-tauri = { version = "1", features = [ "process-relaunch",
+tauri = { version = "1", features = [
+  "process-relaunch",
   "notification-all",
   "protocol-asset",
   "path-all",
@@ -36,12 +35,9 @@ scraper = "0.19.0"
 base64 = "0.22.0"
 engine = "0.0.0"
 log = "0.4.21"
-discord-presence = "1.1.1"
 discord-rich-presence = "0.2.3"
 thiserror = "1.0.58"
-tokio = "1.36.0"
 winreg = "0.52.0"
-simple_logger = "4.3.3"
 sysinfo = "0.30.7"
 minreq = { version = "2.11.0", features = [
   "json-using-serde",

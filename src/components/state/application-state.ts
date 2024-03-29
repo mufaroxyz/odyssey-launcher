@@ -1,18 +1,14 @@
-import KvSettings, { SettingsKeys } from "../../lib/store";
-import { TauriRoutes } from "../../lib/ptypes";
+import KvSettings, { SettingsKeys } from '../../lib/store';
+import { TauriRoutes } from '../../lib/ptypes';
 import {
   ApplicationDataAccessor,
   ApplicationDataKeys,
   ApplicationSettings,
   ClearedApplicationData,
-} from "../../lib/types";
-import { create } from "zustand";
-import { tauriInvoke } from "../../lib/utils";
-import {
-  defaultApplicationData,
-  defaultImages,
-  defaultLocalGameManifest,
-} from "./application-state.default";
+} from '../../lib/types';
+import { create } from 'zustand';
+import { tauriInvoke } from '../../lib/utils';
+import { defaultApplicationData, defaultImages, defaultLocalGameManifest } from './application-state.default';
 
 async function fetchData(initial: boolean = false) {
   let applicationSettings;
@@ -22,13 +18,11 @@ async function fetchData(initial: boolean = false) {
     applicationSettings = await KvSettings.getAll();
   }
 
-  const localGameManifest = await tauriInvoke(
-    TauriRoutes.GetInstalledVersion
-  ).catch((err) => {
+  const localGameManifest = await tauriInvoke(TauriRoutes.GetInstalledVersion).catch((err) => {
     console.error(err);
     return {
       ...defaultLocalGameManifest,
-      error: "Failed to fetch local manifest.",
+      error: 'Failed to fetch local manifest.',
     };
   });
 
@@ -36,7 +30,7 @@ async function fetchData(initial: boolean = false) {
     console.error(err);
     return {
       ...defaultImages,
-      error: "Failed to fetch images.",
+      error: 'Failed to fetch images.',
     };
   });
 
@@ -48,17 +42,9 @@ async function fetchData(initial: boolean = false) {
 }
 
 interface ApplicationState extends ClearedApplicationData {
-  update: <T extends ApplicationSettings[SettingsKeys] | null>(
-    key: SettingsKeys,
-    value: T
-  ) => Promise<void>;
-  updateGlobal: <T extends ApplicationDataAccessor>(
-    key: ApplicationDataKeys,
-    value: T
-  ) => Promise<void>;
-  getValue: <T extends ApplicationDataKeys>(
-    key: T
-  ) => ClearedApplicationData[T];
+  update: <T extends ApplicationSettings[SettingsKeys] | null>(key: SettingsKeys, value: T) => Promise<void>;
+  updateGlobal: <T extends ApplicationDataAccessor>(key: ApplicationDataKeys, value: T) => Promise<void>;
+  getValue: <T extends ApplicationDataKeys>(key: T) => ClearedApplicationData[T];
   isLoaded: boolean;
   REQUEST_STORE_UPDATE: () => Promise<void>;
   _REQUEST_INITIAL_STORE_LOAD: () => Promise<void>;
@@ -67,11 +53,8 @@ interface ApplicationState extends ClearedApplicationData {
 const useApplicationStore = create<ApplicationState>()((set, get) => ({
   ...defaultApplicationData,
   isLoaded: false,
-  update: async <T extends ApplicationSettings[SettingsKeys] | null>(
-    key: SettingsKeys,
-    value: T
-  ) => {
-    console.log("[SET] : ", key, value);
+  update: async <T extends ApplicationSettings[SettingsKeys] | null>(key: SettingsKeys, value: T) => {
+    console.log('[SET] : ', key, value);
 
     await KvSettings.set(key, value);
 
@@ -83,10 +66,7 @@ const useApplicationStore = create<ApplicationState>()((set, get) => ({
     }));
   },
   // Basically an update function but for global application state without saving to disk.
-  updateGlobal: async <T extends ApplicationDataAccessor>(
-    key: ApplicationDataKeys,
-    value: T
-  ) =>
+  updateGlobal: async <T extends ApplicationDataAccessor>(key: ApplicationDataKeys, value: T) =>
     set(() => ({
       [key]: value,
     })),
@@ -94,11 +74,9 @@ const useApplicationStore = create<ApplicationState>()((set, get) => ({
   getValue: <T extends ApplicationDataKeys>(key: T) => get()[key],
 
   _REQUEST_INITIAL_STORE_LOAD: async () => {
-    console.log("[REQUEST_INITIAL_STORE_LOAD] : Requesting store load.");
+    console.log('[REQUEST_INITIAL_STORE_LOAD] : Requesting store load.');
     if (get().isLoaded) {
-      console.warn(
-        "[REQUEST_INITAL_STORE_LOAD] : Store is already loaded. Defaulting to REQUEST_STORE_UPDATE."
-      );
+      console.warn('[REQUEST_INITAL_STORE_LOAD] : Store is already loaded. Defaulting to REQUEST_STORE_UPDATE.');
       await get().REQUEST_STORE_UPDATE();
       return;
     }

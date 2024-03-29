@@ -1,13 +1,13 @@
-import { emit, listen } from "@tauri-apps/api/event";
-import { cn, prettifyBytes } from "../../../lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect } from "react";
-import useApplicationStore from "../../state/application-state";
-import { Progress } from "../../ui/progress";
-import { Button } from "../../ui/button";
-import { CircleOff, Pause, Slash } from "lucide-react";
-import { installationCancelFill } from "../../state/application-state.fills";
-import { relaunch } from "@tauri-apps/api/process";
+import { emit, listen } from '@tauri-apps/api/event';
+import { cn, prettifyBytes } from '../../../lib/utils';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect } from 'react';
+import useApplicationStore from '../../state/application-state';
+import { Progress } from '../../ui/progress';
+import { Button } from '../../ui/button';
+import { CircleOff, Pause, Slash } from 'lucide-react';
+import { installationCancelFill } from '../../state/application-state.fills';
+import { relaunch } from '@tauri-apps/api/process';
 
 const CheckIcon = ({ className }: { className?: string }) => {
   return (
@@ -17,7 +17,7 @@ const CheckIcon = ({ className }: { className?: string }) => {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className={cn("w-6 h-6 ", className)}
+      className={cn('w-6 h-6 ', className)}
     >
       <path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
     </svg>
@@ -30,7 +30,7 @@ const CheckFilled = ({ className }: { className?: string }) => {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="currentColor"
-      className={cn("w-6 h-6 ", className)}
+      className={cn('w-6 h-6 ', className)}
     >
       <path
         fillRule="evenodd"
@@ -49,14 +49,14 @@ const LoaderCore = ({
   loadingStates,
   value = 0,
   percentage = 0,
-  progressOn = "none",
+  progressOn = 'none',
   current = 0,
   total = 0,
 }: {
   loadingStates: LoadingState[];
   value?: number;
   percentage?: number;
-  progressOn?: "installing" | "unpacking" | "none";
+  progressOn?: 'installing' | 'unpacking' | 'none';
   current?: number;
   total?: number;
 }) => {
@@ -70,9 +70,7 @@ const LoaderCore = ({
           <>
             <motion.div
               key={index}
-              className={cn(
-                "text-left flex gap-2 mb-4 font-semibold text-xl bg-[#1E1E1E] p-2 rounded-md w-full"
-              )}
+              className={cn('text-left flex gap-2 mb-4 font-semibold text-xl bg-[#1E1E1E] p-2 rounded-md w-full')}
               initial={{ opacity: 0, y: -(value * 40) }}
               animate={{ opacity: opacity, y: -(value * 40) }}
               transition={{ duration: 0.5 }}
@@ -81,20 +79,12 @@ const LoaderCore = ({
                 {index > value && <CheckIcon className="text-white" />}
                 {index <= value &&
                   (value === index ? (
-                    <Slash
-                      size={20}
-                      className={cn("text-accent opacity-100 mr-3")}
-                    />
+                    <Slash size={20} className={cn('text-accent opacity-100 mr-3')} />
                   ) : (
-                    <CheckFilled className={cn("text-white")} />
+                    <CheckFilled className={cn('text-white')} />
                   ))}
               </div>
-              <span
-                className={cn(
-                  "text-white",
-                  value === index && "text-accent opacity-100"
-                )}
-              >
+              <span className={cn('text-white', value === index && 'text-accent opacity-100')}>
                 {loadingState.text}
               </span>
             </motion.div>
@@ -102,20 +92,19 @@ const LoaderCore = ({
         );
       })}
       <div className="space-y-4 w-full">
-        {progressOn != "none" && (
+        {progressOn != 'none' && (
           <>
             <div>
               <div className="flex items-end justify-between w-full text-white font-semibold mb-1">
-                {progressOn === "installing" && (
+                {progressOn === 'installing' && (
                   <>
                     <span className="text-lg">
-                      Downloading {prettifyBytes(current)} /{" "}
-                      {prettifyBytes(total)}
+                      Downloading {prettifyBytes(current)} / {prettifyBytes(total)}
                     </span>
                     <span className="font-bold">{percentage.toFixed(2)}%</span>
                   </>
                 )}
-                {progressOn === "unpacking" && (
+                {progressOn === 'unpacking' && (
                   <span className="text-white text-md">
                     Unpacking {prettifyBytes(current)} / {prettifyBytes(total)}
                   </span>
@@ -128,7 +117,7 @@ const LoaderCore = ({
                 disabled
                 icon={<CircleOff size={20} />}
                 onClick={() => {
-                  emit("installation-request-cancel");
+                  emit('installation-request-cancel');
                 }}
                 className="flex-grow flex justify-between flex-row-reverse z-30"
                 variant="dark"
@@ -137,9 +126,9 @@ const LoaderCore = ({
               </Button>
               <Button
                 icon={<Pause size={20} />}
-                disabled={progressOn !== "installing"}
+                disabled={progressOn !== 'installing'}
                 onClick={async () => {
-                  console.log("hello");
+                  console.log('hello');
                   // emit("installation-request-pause");
                   await relaunch();
                 }}
@@ -163,32 +152,26 @@ export const InstallationScreen = ({
   loadingStates: LoadingState[];
   loading?: boolean;
 }) => {
-  const {
-    installationContext,
-    updateGlobal,
-    getValue,
-    update,
-    applicationSettings,
-  } = useApplicationStore();
+  const { installationContext, updateGlobal, getValue, update, applicationSettings } = useApplicationStore();
 
   useEffect(() => {
     const unlistenStateMoveRequest = listen(
-      "installation-next-step",
+      'installation-next-step',
       (event: {
         payload: {
           step: number;
         };
       }) => {
-        const installationContext = getValue("installationContext");
+        const installationContext = getValue('installationContext');
 
-        update("lastInstallationStep", event.payload.step);
+        update('lastInstallationStep', event.payload.step);
 
-        updateGlobal("installationContext", {
+        updateGlobal('installationContext', {
           ...installationContext,
           isInstalling: true,
           currentStep: event.payload.step,
         });
-      }
+      },
     );
 
     /**
@@ -197,7 +180,7 @@ export const InstallationScreen = ({
      */
 
     const installationProgress = listen(
-      "installation-progress",
+      'installation-progress',
       (event: {
         payload: {
           percentage: number;
@@ -205,22 +188,22 @@ export const InstallationScreen = ({
           total: number;
         };
       }) => {
-        const installationContext = getValue("installationContext");
+        const installationContext = getValue('installationContext');
 
-        updateGlobal("installationContext", {
+        updateGlobal('installationContext', {
           ...installationContext,
           progressPercentage: event.payload?.percentage,
-          progressOn: "installing",
+          progressOn: 'installing',
           progress: {
             current: event.payload?.downloaded,
             total: event.payload?.total,
           },
         });
-      }
+      },
     );
 
     const unpackingProgress = listen(
-      "installation-unpacking",
+      'installation-unpacking',
       (event: {
         payload: {
           percentage: number;
@@ -228,48 +211,48 @@ export const InstallationScreen = ({
           total: number;
         };
       }) => {
-        const installationContext = getValue("installationContext");
+        const installationContext = getValue('installationContext');
 
-        updateGlobal("installationContext", {
+        updateGlobal('installationContext', {
           ...installationContext,
           progressPercentage: event.payload?.percentage,
-          progressOn: "unpacking",
+          progressOn: 'unpacking',
           progress: {
             current: event.payload?.unpacked,
             total: event.payload?.total,
           },
         });
-      }
+      },
     );
 
-    const installationPaused = listen("installation-paused", () => {
-      const installationContext = getValue("installationContext");
+    const installationPaused = listen('installation-paused', () => {
+      const installationContext = getValue('installationContext');
 
-      updateGlobal("installationContext", {
+      updateGlobal('installationContext', {
         ...installationContext,
         ...installationCancelFill,
       });
     });
 
-    const installationFinish = listen("installation-finish", () => {
-      const paths = localStorage.getItem("installationPaths");
-      const installationContext = getValue("installationContext");
+    const installationFinish = listen('installation-finish', () => {
+      const paths = localStorage.getItem('installationPaths');
+      const installationContext = getValue('installationContext');
 
       if (!paths) return;
 
       const parsed = JSON.parse(paths);
 
-      update("genshinImpactData", {
+      update('genshinImpactData', {
         path: parsed.installationPath,
       });
 
-      updateGlobal("installationContext", {
+      updateGlobal('installationContext', {
         ...installationContext,
         ...installationCancelFill,
         isInstalling: false,
         currentStep: 0,
         progressPercentage: 0,
-        progressOn: "none",
+        progressOn: 'none',
         progress: {
           current: 0,
           total: 0,
@@ -277,10 +260,10 @@ export const InstallationScreen = ({
       });
     });
 
-    const setCurrentStep = listen("installation-running-step", () => {
-      const installationContext = getValue("installationContext");
+    const setCurrentStep = listen('installation-running-step', () => {
+      const installationContext = getValue('installationContext');
 
-      updateGlobal("installationContext", {
+      updateGlobal('installationContext', {
         ...installationContext,
         isInstalling: true,
         currentStep: applicationSettings.lastInstallationStep,
