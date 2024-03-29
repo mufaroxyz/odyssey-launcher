@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  CI:
+    strategy:
+      fail-fast: false
+
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: canary
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Dependencies
+        run: bun install
+
+      - name: Check Formatting
+        run: bun format:check
+
+      - name: Check Linting
+        run: bun lint
+
+      - name: Build
+        run: bun build

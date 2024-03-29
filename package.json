@@ -17,7 +17,10 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "format": "prettier --write src/** src-tauri/** README.md",
+    "format:check"  : "prettier --check src/** src-tauri/** README.md",
+    "lint": "eslint src/** src-tauri/**"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.0.5",
@@ -30,7 +33,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cross-env": "^7.0.3",
-    "framer-motion": "^11.0.14",
+    "framer-motion": "11.0.22",
     "lucide-react": "^0.358.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
