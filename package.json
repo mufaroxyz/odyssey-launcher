@@ -18,8 +18,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "format": "prettier --write src/** README.md",
-    "format:check"  : "prettier --check src/** README.md",
+    "format": "prettier --write src/**",
+    "format:check"  : "prettier --check src/**",
     "lint": "eslint src/**"
   },
   "dependencies": {
