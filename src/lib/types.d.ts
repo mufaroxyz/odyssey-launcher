@@ -36,6 +36,7 @@ export interface GenshinImpactData {
 export type ApplicationSettings = {
   genshinImpactData: GenshinImpactData;
   playTime: number;
+  lastInstallationStep: number;
 };
 
 export interface LocalGameManifest {

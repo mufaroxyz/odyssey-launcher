@@ -11,7 +11,7 @@ You can download the latest release from the [GitHub releases page](https://gith
 - [x] Launching Game
 - [x] Installing game
 - [/] Updating Game
-- [ ] Playing time
+- [x] Playing time
 - [ ] Built-in FPS Unlocker
 - [ ] Mod Management (Using Game Banana)
 

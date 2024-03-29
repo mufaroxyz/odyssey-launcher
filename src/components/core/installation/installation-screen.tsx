@@ -1,4 +1,3 @@
-"use client";
 import { emit, listen } from "@tauri-apps/api/event";
 import { cn, prettifyBytes } from "../../../lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -8,6 +7,7 @@ import { Progress } from "../../ui/progress";
 import { Button } from "../../ui/button";
 import { CircleOff, Pause, Slash } from "lucide-react";
 import { installationCancelFill } from "../../state/application-state.fills";
+import { relaunch } from "@tauri-apps/api/process";
 
 const CheckIcon = ({ className }: { className?: string }) => {
   return (
@@ -138,9 +138,10 @@ const LoaderCore = ({
               <Button
                 icon={<Pause size={20} />}
                 disabled={progressOn !== "installing"}
-                onClick={() => {
+                onClick={async () => {
                   console.log("hello");
-                  emit("installation-request-pause");
+                  // emit("installation-request-pause");
+                  await relaunch();
                 }}
                 className="flex-grow flex justify-between flex-row-reverse z-30"
                 variant="dark"
@@ -162,8 +163,13 @@ export const InstallationScreen = ({
   loadingStates: LoadingState[];
   loading?: boolean;
 }) => {
-  const { installationContext, updateGlobal, getValue, update } =
-    useApplicationStore();
+  const {
+    installationContext,
+    updateGlobal,
+    getValue,
+    update,
+    applicationSettings,
+  } = useApplicationStore();
 
   useEffect(() => {
     const unlistenStateMoveRequest = listen(
@@ -174,6 +180,8 @@ export const InstallationScreen = ({
         };
       }) => {
         const installationContext = getValue("installationContext");
+
+        update("lastInstallationStep", event.payload.step);
 
         updateGlobal("installationContext", {
           ...installationContext,
@@ -269,12 +277,23 @@ export const InstallationScreen = ({
       });
     });
 
+    const setCurrentStep = listen("installation-running-step", () => {
+      const installationContext = getValue("installationContext");
+
+      updateGlobal("installationContext", {
+        ...installationContext,
+        isInstalling: true,
+        currentStep: applicationSettings.lastInstallationStep,
+      });
+    });
+
     return () => {
       unlistenStateMoveRequest.then((ul) => ul());
       installationProgress.then((ul) => ul());
       unpackingProgress.then((ul) => ul());
       installationPaused.then((ul) => ul());
       installationFinish.then((ul) => ul());
+      setCurrentStep.then((ul) => ul());
     };
   }, [installationContext]);
   return (

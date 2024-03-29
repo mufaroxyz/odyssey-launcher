@@ -21,6 +21,12 @@
     "macOSPrivateApi": true,
     "allowlist": {
       "all": false,
+      "process": {
+        "all": false,
+        "exit": false,
+        "relaunch": true,
+        "relaunchDangerousAllowSymlinkMacos": false
+      },
       "notification": {
         "all": true
       },

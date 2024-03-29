@@ -22,7 +22,7 @@ export default function FreshInstallModal({
 }: ModalProps & {
   setCurrentModal: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
-  const { updateGlobal } = useApplicationStore(
+  const { updateGlobal, getValue } = useApplicationStore(
     useShallow((s) => ({
       updateGlobal: s.updateGlobal,
       update: s.update,
@@ -50,7 +50,7 @@ export default function FreshInstallModal({
         .then((r) => r.path)
         .catch((_) => "");
 
-      setInstallationPath(path);
+      setInstallationPath(path + "/Genshin Impact");
       setTempPath(path + "/temp");
     };
 
@@ -66,7 +66,7 @@ export default function FreshInstallModal({
     });
 
     if (!selected) return;
-    setInstallationPath(selected as string);
+    setInstallationPath((selected as string) + "/Genshin Impact");
   }
 
   async function changeTempPath() {
@@ -82,6 +82,14 @@ export default function FreshInstallModal({
   }
 
   async function handleConfirm() {
+    const currentValue = getValue("installationContext");
+
+    if (currentValue.isInstalling)
+      return updateGlobal("installationContext", {
+        ...currentValue,
+        isInstalling: true,
+      });
+
     console.log("Installation path:", installationPath);
     console.log("Temporary path:", tempPath);
     setCurrentModal(null);
@@ -102,6 +110,8 @@ export default function FreshInstallModal({
     await tauriInvoke(TauriRoutes.GameInstall, {
       installationPath,
       tempPath,
+    }).catch((e) => {
+      console.error("Error while installing game:", e);
     });
   }
 

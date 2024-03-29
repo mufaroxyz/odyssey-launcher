@@ -49,6 +49,7 @@ export const Button: React.FC<
 
   return (
     <button
+      type="button"
       onClick={(e) => {
         if (disabled) e.preventDefault();
         else onClick && onClick(e);

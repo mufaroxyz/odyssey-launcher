@@ -17,6 +17,7 @@ export const defaultApplicationSettings = {
     path: "",
   },
   playTime: 0,
+  lastInstallationStep: 0,
 };
 
 export const defaultInstallationContext = {
