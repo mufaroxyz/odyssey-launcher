@@ -8,6 +8,7 @@ export enum TauriRoutes {
   GetInstalledVersion = "get_installed_version",
   GetExecutablePath = "get_executable_path",
   GameInstall = "game_install",
+  UninstallGame = "uninstall_game",
   SendNotification = "send_notification",
 }
 
@@ -31,6 +32,9 @@ export interface TauriPayload {
   [TauriRoutes.GameInstall]: {
     installationPath: string;
     tempPath?: string;
+  };
+  [TauriRoutes.UninstallGame]: {
+    path: string;
   };
   [TauriRoutes.SendNotification]: {
     title: string;
@@ -60,5 +64,8 @@ export interface TauriResponse {
     path: string;
   };
   [TauriRoutes.GameInstall]: void;
+  [TauriRoutes.UninstallGame]: {
+    status: string;
+  };
   [TauriRoutes.SendNotification]: void;
 }

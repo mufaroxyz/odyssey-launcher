@@ -146,6 +146,7 @@ fn main() {
             commands::io::ensure_installation_path,
             commands::io::fetch_local_manifest,
             commands::io::get_executable_path,
+            commands::io::uninstall_game,
             commands::application_executor::start_game,
             commands::assets::fetch_images,
             commands::installation::game_install,

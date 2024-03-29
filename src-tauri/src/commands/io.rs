@@ -39,3 +39,21 @@ pub fn get_executable_path() -> Result<Value, ()> {
         }
     }
 }
+
+#[tauri::command]
+pub fn uninstall_game(path: String) -> Result<Value, Value> {
+    let path = std::path::Path::new(&path);
+    if path.exists() {
+        std::fs::remove_dir_all(path).unwrap();
+        Ok(json!({
+            "status": "success"
+        })
+        .into())
+    } else {
+        Ok(json!({
+            "status": "error",
+            "message": "Path does not exist"
+        })
+        .into())
+    }
+}

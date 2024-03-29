@@ -2,10 +2,10 @@ import { ErrorBoundary } from "react-error-boundary";
 import LoadingScreen from "../components/core/loading-screen";
 import useApplicationStore from "../components/state/application-state";
 import { Button } from "../components/ui/button";
-import { Clock, Download, Play, SettingsIcon } from "lucide-react";
+import { Clock, Download, Play, SettingsIcon, Trash2 } from "lucide-react";
 import RoutePage from "../components/core/wrappers/route-page";
 import LatestAnnouncementsGroup from "../components/core/game-announcements/latest-announcements-group";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import AutoDetectedPathModal from "../components/core/installation/auto-detected-path.modal";
 import { useState } from "react";
 import { convertFileSrc, invoke } from "@tauri-apps/api/tauri";
@@ -13,6 +13,7 @@ import { tauriInvoke } from "../lib/utils";
 import { TauriRoutes } from "../lib/ptypes";
 import FreshInstallModal from "../components/core/installation/fresh-install.modal";
 import { InstallationScreen } from "../components/core/installation/installation-screen";
+import UninstallModal from "../components/core/installation/uninstall.modal";
 
 const container = {
   hidden: { opacity: 0 },
@@ -29,6 +30,15 @@ const item = {
   show: { y: 0 },
 };
 
+const configureItemVariants = {
+  open: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 500, damping: 24 },
+  },
+  closed: { opacity: 0, y: 20, transition: { duration: 0.2 } },
+};
+
 function getHoursAndMinutesFromSeconds(seconds: number) {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
@@ -38,6 +48,7 @@ function getHoursAndMinutesFromSeconds(seconds: number) {
 
 function App() {
   const [currentModal, setCurrentModal] = useState<string | null>(null);
+  const [configureOpen, setConfigureOpen] = useState(false);
 
   const {
     applicationSettings,
@@ -167,17 +178,65 @@ function App() {
             </Button>
           </motion.div>
 
-          <motion.div variants={item}>
+          <motion.div
+            animate={configureOpen ? "open" : "closed"}
+            variants={item}
+            className="relative w-32"
+          >
             <Button
               variant="dark"
               label="Greet"
               className={"!w-fit"}
               acrylic
-              disabled
+              onClick={() => setConfigureOpen(!configureOpen)}
               icon={<SettingsIcon size={20} />}
             >
               Configure
             </Button>
+            <AnimatePresence mode="wait">
+              <motion.ul
+                variants={{
+                  open: {
+                    scaleX: 1,
+                    scaleY: 1,
+                    originY: 1,
+                    translateX: "1.5rem",
+                    transition: {
+                      type: "spring",
+                      bounce: 0,
+                      duration: 0.3,
+                      delayChildren: 0.1,
+                      staggerChildren: 0.05,
+                    },
+                  },
+                  closed: {
+                    scaleX: 0,
+                    scaleY: 0,
+                    originY: 1,
+                    translateX: "1.5rem",
+                    transition: {
+                      type: "spring",
+                      bounce: 0,
+                      duration: 0.3,
+                    },
+                  },
+                }}
+                className="absolute w-[calc(8rem+3rem)] text-white !h-fit bottom-10 right-0 translate-x-[1.5rem] bg-button-dark p-2 flex flex-col gap-2 rounded-lg font-semibold"
+              >
+                <UninstallModal>
+                  <motion.li
+                    className="text-red-500 flex justify-between items-center hover:bg-button-hover p-1 px-2 duration-100 transition-colors ease-in-out rounded-md cursor-pointer"
+                    variants={configureItemVariants}
+                    onClick={() => {
+                      setConfigureOpen(false);
+                    }}
+                  >
+                    <span>Uninstall</span>
+                    <Trash2 size={18} />
+                  </motion.li>
+                </UninstallModal>
+              </motion.ul>
+            </AnimatePresence>
           </motion.div>
           <motion.div variants={item}>
             <Button
