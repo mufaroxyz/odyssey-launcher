@@ -23,7 +23,7 @@ export interface ClearedApplicationData {
   images: Pick<Images, keyof Images>;
 }
 
-export type ApplicationDataKeys = keyof (Omit<ApplicationData, 'applicationSettings'> & object);
+export type ApplicationDataKeys = keyof (ApplicationData & object);
 export type ApplicationDataAccessor = ApplicationData[ApplicationDataKeys];
 
 export interface GenshinImpactData {
