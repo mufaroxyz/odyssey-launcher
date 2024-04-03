@@ -34,10 +34,23 @@ async function fetchData(initial: boolean = false) {
     };
   });
 
+  let screenshots;
+  if (applicationSettings.genshinImpactData.path) {
+    screenshots = await tauriInvoke(TauriRoutes.ReadScreenshots, {
+      path: applicationSettings.genshinImpactData.path,
+    }).catch((err) => {
+      console.error(err);
+      return [];
+    });
+  } else {
+    screenshots = [];
+  }
+
   return {
     applicationSettings,
     localGameManifest: localGameManifest,
     images,
+    screenshots,
   };
 }
 

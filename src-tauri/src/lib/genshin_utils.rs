@@ -52,3 +52,28 @@ pub fn ensure_installation_path(path: String) -> Result<Value, Value> {
         Err(return_value)
     }
 }
+
+pub fn read_screenshots(path: String) -> Result<Value, Value> {
+    let screenshots_path = format!("{}\\ScreenShot", &path);
+    info!("Reading screenshots from: {}", &screenshots_path);
+    let screenshots = std::fs::read_dir(&screenshots_path);
+    match screenshots {
+        Ok(screenshots) => {
+            let mut screenshot_list = Vec::new();
+            for screenshot in screenshots {
+                let screenshot = screenshot.unwrap();
+                let screenshot_path = screenshot.path();
+                let screenshot_path = screenshot_path.to_string_lossy().into_owned();
+                screenshot_list.push(screenshot_path);
+            }
+            let return_value = serde_json::json!(screenshot_list);
+            Ok(return_value)
+        }
+        Err(_) => {
+            let return_value = serde_json::json!({
+                "error": "Failed to read screenshots"
+            });
+            Err(return_value)
+        }
+    }
+}

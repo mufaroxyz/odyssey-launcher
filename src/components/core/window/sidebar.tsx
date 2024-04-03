@@ -1,4 +1,4 @@
-import { Box, Home } from 'lucide-react';
+import { Box, Camera, Home } from 'lucide-react';
 import { Tab, Tabs } from '../../ui/sidebar-tabs';
 import { motion } from 'framer-motion';
 import { cn } from '../../../lib/utils';
@@ -14,6 +14,11 @@ export default function Sidebar() {
       icon: <Box size={20} />,
       value: 'packages',
       to: '/packages',
+    },
+    {
+      icon: <Camera size={20} />,
+      value: 'screenshots',
+      to: '/screenshots',
     },
   ];
 

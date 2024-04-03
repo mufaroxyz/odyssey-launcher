@@ -1,4 +1,4 @@
-import { Images, LocalGameManifest } from './types';
+import { Images, LocalGameManifest, Screenshot } from './types';
 
 export enum TauriRoutes {
   FindInstallationPath = 'find_installation_path',
@@ -10,6 +10,7 @@ export enum TauriRoutes {
   GameInstall = 'game_install',
   UninstallGame = 'uninstall_game',
   SendNotification = 'send_notification',
+  ReadScreenshots = 'read_screenshots',
 }
 
 export type GlobalResponseError = {
@@ -40,6 +41,9 @@ export interface TauriPayload {
     title: string;
     body: string;
   };
+  [TauriRoutes.ReadScreenshots]: {
+    path: string;
+  };
 }
 
 export interface TauriResponse {
@@ -68,4 +72,7 @@ export interface TauriResponse {
     status: string;
   };
   [TauriRoutes.SendNotification]: void;
+  [TauriRoutes.ReadScreenshots]: {
+    screenshots: Array<Screenshot>;
+  };
 }

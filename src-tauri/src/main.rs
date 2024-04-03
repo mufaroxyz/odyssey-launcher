@@ -131,6 +131,7 @@ fn main() {
             _ => {}
         })
         .plugin(tauri_plugin_store::Builder::default().build())
+        .plugin(tauri_plugin_drag::init())
         .manage(DiscordRPCState(Arc::new(Mutex::new(discord_rpc))))
         .manage(AssetManagerState(Arc::new(Mutex::new(asset_manager))))
         .manage(IsGameInstallingState(Arc::new(Mutex::new(
@@ -147,6 +148,7 @@ fn main() {
             commands::io::fetch_local_manifest,
             commands::io::get_executable_path,
             commands::io::uninstall_game,
+            commands::io::read_screenshots,
             commands::application_executor::start_game,
             commands::assets::fetch_images,
             commands::installation::game_install,

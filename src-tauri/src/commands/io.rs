@@ -57,3 +57,8 @@ pub fn uninstall_game(path: String) -> Result<Value, Value> {
         .into())
     }
 }
+
+#[tauri::command]
+pub fn read_screenshots(path: String) -> Result<Value, Value> {
+    genshin_utils::read_screenshots(path).into()
+}
