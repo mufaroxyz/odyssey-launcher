@@ -149,7 +149,7 @@ function App() {
             </Button>
           </motion.div>
 
-          <motion.div animate={configureOpen ? 'open' : 'closed'} variants={item} className="relative w-32">
+          <motion.div variants={item} className="relative w-32">
             <Button
               variant="dark"
               label="Greet"
@@ -160,50 +160,52 @@ function App() {
             >
               Configure
             </Button>
-            <AnimatePresence mode="wait">
-              <motion.ul
-                variants={{
-                  open: {
-                    scaleX: 1,
-                    scaleY: 1,
-                    originY: 1,
-                    translateX: '1.5rem',
-                    transition: {
-                      type: 'spring',
-                      bounce: 0,
-                      duration: 0.3,
-                      delayChildren: 0.1,
-                      staggerChildren: 0.05,
+            <motion.div animate={configureOpen ? 'open' : 'closed'}>
+              <AnimatePresence mode="wait">
+                <motion.ul
+                  variants={{
+                    open: {
+                      scaleX: 1,
+                      scaleY: 1,
+                      originY: 1,
+                      translateX: '1.5rem',
+                      transition: {
+                        type: 'spring',
+                        bounce: 0,
+                        duration: 0.3,
+                        delayChildren: 0.1,
+                        staggerChildren: 0.05,
+                      },
                     },
-                  },
-                  closed: {
-                    scaleX: 0,
-                    scaleY: 0,
-                    originY: 1,
-                    translateX: '1.5rem',
-                    transition: {
-                      type: 'spring',
-                      bounce: 0,
-                      duration: 0.3,
+                    closed: {
+                      scaleX: 0,
+                      scaleY: 0,
+                      originY: 1,
+                      translateX: '1.5rem',
+                      transition: {
+                        type: 'spring',
+                        bounce: 0,
+                        duration: 0.3,
+                      },
                     },
-                  },
-                }}
-                className="absolute w-[calc(8rem+3rem)] text-white !h-fit bottom-10 right-0 translate-x-[1.5rem] bg-button-dark p-2 flex flex-col gap-2 rounded-lg font-semibold"
-              >
-                <UninstallModal>
-                  <motion.li
-                    className="text-red-500 flex justify-between items-center hover:bg-button-hover p-1 px-2 duration-100 transition-colors ease-in-out rounded-md cursor-pointer"
-                    variants={configureItemVariants}
-                    onClick={() => {
-                      setConfigureOpen(false);
-                    }}
-                  >
-                    <span>Uninstall</span>
-                    <Trash2 size={18} />
-                  </motion.li>
-                </UninstallModal>
-              </motion.ul>
-            </AnimatePresence>
+                  }}
+                  className="absolute w-[calc(8rem+3rem)] text-white !h-fit bottom-10 right-0 translate-x-[1.5rem] bg-button-dark p-2 flex flex-col gap-2 rounded-lg font-semibold"
+                >
+                  <UninstallModal>
+                    <motion.li
+                      className="text-red-500 flex justify-between items-center hover:bg-button-hover p-1 px-2 duration-100 transition-colors ease-in-out rounded-md cursor-pointer"
+                      variants={configureItemVariants}
+                      onClick={() => {
+                        setConfigureOpen(false);
+                      }}
+                    >
+                      <span>Uninstall</span>
+                      <Trash2 size={18} />
+                    </motion.li>
+                  </UninstallModal>
+                </motion.ul>
+              </AnimatePresence>
+            </motion.div>
           </motion.div>
           <motion.div variants={item}>
             <Button
