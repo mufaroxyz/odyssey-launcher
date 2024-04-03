@@ -41,6 +41,14 @@ pub fn start_game(
         let activity = Activity::new()
             .state("In Game")
             .details("Playing Genshin Impact")
+            .timestamps(
+                Timestamps::new().start(
+                    std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .unwrap()
+                        .as_secs() as i64,
+                ),
+            )
             .assets(asset);
 
         let state_clone = Arc::clone(&state.0);
