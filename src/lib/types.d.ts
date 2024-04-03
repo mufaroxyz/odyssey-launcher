@@ -14,6 +14,7 @@ export interface ApplicationData {
   localGameManifest: LocalGameManifest;
   installationContext: InstallationContext;
   images: Images;
+  screenshots: Screenshot[];
 }
 
 export interface ClearedApplicationData {
@@ -21,9 +22,10 @@ export interface ClearedApplicationData {
   localGameManifest: Pick<LocalGameManifest, keyof LocalGameManifest>;
   installationContext: Pick<InstallationContext, keyof InstallationContext>;
   images: Pick<Images, keyof Images>;
+  screenshots: Screenshot[];
 }
 
-export type ApplicationDataKeys = keyof (Omit<ApplicationData, 'applicationSettings'> & object);
+export type ApplicationDataKeys = keyof (ApplicationData & object);
 export type ApplicationDataAccessor = ApplicationData[ApplicationDataKeys];
 
 export interface GenshinImpactData {
@@ -85,3 +87,5 @@ export interface Images {
   banner: Banner[];
   post: Post[];
 }
+
+export interface Screenshot extends string {}

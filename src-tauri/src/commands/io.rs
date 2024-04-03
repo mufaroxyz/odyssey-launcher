@@ -10,7 +10,7 @@ pub fn find_installation_path() -> Result<Value, Value> {
 }
 
 #[tauri::command]
-pub fn ensure_installation_path(path: String) -> Result<String, Value> {
+pub fn ensure_installation_path(path: String) -> Result<Value, Value> {
     genshin_utils::ensure_installation_path(path).into()
 }
 
@@ -56,4 +56,9 @@ pub fn uninstall_game(path: String) -> Result<Value, Value> {
         })
         .into())
     }
+}
+
+#[tauri::command]
+pub fn read_screenshots(path: String) -> Result<Value, Value> {
+    genshin_utils::read_screenshots(path).into()
 }

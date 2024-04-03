@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "Odyssey Launcher",
-    "version": "0.0.7"
+    "version": "0.0.8"
   },
   "tauri": {
     "updater": {
@@ -62,7 +62,8 @@
         "height": 730,
         "transparent": true,
         "decorations": false,
-        "resizable": false
+        "resizable": false,
+        "fileDropEnabled": false
       }
     ],
     "security": {

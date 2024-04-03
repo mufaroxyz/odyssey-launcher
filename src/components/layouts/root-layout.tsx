@@ -6,7 +6,7 @@ import useApplicationStore from '../state/application-state';
 import { listen } from '@tauri-apps/api/event';
 
 export default function RootLayout() {
-  const { applicationSettings, update } = useApplicationStore();
+  const { update, getValue } = useApplicationStore();
 
   useEffect(() => {
     const listener = listen(
@@ -16,7 +16,14 @@ export default function RootLayout() {
           elapsed: number;
         };
       }) => {
-        console.log('[PLAYTIME] : ', event.payload.elapsed);
+        const applicationSettings = getValue('applicationSettings');
+
+        console.log(
+          '[PLAYTIME] : ',
+          event.payload.elapsed,
+          'NEW PLAYTIME: ',
+          applicationSettings.playTime + event.payload.elapsed,
+        );
         update('playTime', applicationSettings.playTime + event.payload.elapsed);
       },
     );

@@ -34,18 +34,46 @@ pub fn auto_detect_genshin_installation() -> Result<Value, Value> {
     }
 }
 
-pub fn ensure_installation_path(path: String) -> Result<String, Value> {
-    println!("ensure_installation_path: {}", &path);
+pub fn ensure_installation_path(path: String) -> Result<Value, Value> {
     let executable_path = format!("{}\\GenshinImpact.exe", &path);
+    info!(
+        "Checking if Genshin Impact is installed at: {}",
+        &executable_path
+    );
     if std::path::Path::new(&executable_path).exists() {
         let return_value = serde_json::json!({
             "path": &path,
         });
-        Ok(return_value.to_string())
+        Ok(return_value)
     } else {
         let return_value = serde_json::json!({
           "error": "Genshin Impact installation not found"
         });
         Err(return_value)
+    }
+}
+
+pub fn read_screenshots(path: String) -> Result<Value, Value> {
+    let screenshots_path = format!("{}\\ScreenShot", &path);
+    info!("Reading screenshots from: {}", &screenshots_path);
+    let screenshots = std::fs::read_dir(&screenshots_path);
+    match screenshots {
+        Ok(screenshots) => {
+            let mut screenshot_list = Vec::new();
+            for screenshot in screenshots {
+                let screenshot = screenshot.unwrap();
+                let screenshot_path = screenshot.path();
+                let screenshot_path = screenshot_path.to_string_lossy().into_owned();
+                screenshot_list.push(screenshot_path);
+            }
+            let return_value = serde_json::json!(screenshot_list);
+            Ok(return_value)
+        }
+        Err(_) => {
+            let return_value = serde_json::json!({
+                "error": "Failed to read screenshots"
+            });
+            Err(return_value)
+        }
     }
 }

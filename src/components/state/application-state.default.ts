@@ -2,6 +2,8 @@ export const defaultLocalGameManifest = {
   version: '',
 };
 
+export const defaultScreenshots = [];
+
 export const defaultImages = {
   adv: {
     background: '',
@@ -40,4 +42,5 @@ export const defaultApplicationData = {
   localGameManifest: defaultLocalGameManifest,
   installationContext: defaultInstallationContext,
   images: defaultImages,
+  screenshots: defaultScreenshots,
 };

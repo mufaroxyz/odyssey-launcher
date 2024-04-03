@@ -55,6 +55,7 @@ walkdir = "2.5.0"
 percent-encoding = "2.3.1"
 simplelog = "0.12.2"
 msgbox = "0.7.0"
+tauri-plugin-drag = "0.3.0"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
