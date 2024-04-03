@@ -3,7 +3,7 @@ import { ApplicationSettings } from './types';
 
 export type SettingsKeys = keyof ApplicationSettings;
 
-const store = new Store('odyssey-launcher-1.settings.dat');
+const store = new Store('odyssey-launcher.settings.dat');
 
 export default abstract class KvSettings {
   static async set<T extends ApplicationSettings[SettingsKeys] | null>(key: SettingsKeys, value: T) {
