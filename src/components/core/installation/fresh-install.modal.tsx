@@ -17,13 +17,14 @@ export default function FreshInstallModal({
 }: ModalProps & {
   setCurrentModal: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
-  const { updateGlobal, getValue } = useApplicationStore(
+  const { updateGlobal, getValue, update } = useApplicationStore(
     useShallow((s) => ({
       updateGlobal: s.updateGlobal,
       update: s.update,
       getValue: s.getValue,
     })),
   );
+  const [error, setError] = useState<string | null>(null);
   const [installationPath, setInstallationPath] = useState('');
   const [tempPath, setTempPath] = useState<null | string>(null);
 
@@ -43,12 +44,39 @@ export default function FreshInstallModal({
         .then((r) => r.path)
         .catch(() => '');
 
-      setInstallationPath(path + '/Genshin Impact');
+      setInstallationPath(path + '/game');
       setTempPath(path + '/temp');
     };
 
     fetchData();
   }, [open]);
+
+  async function alreadyInstalled() {
+    setError('');
+
+    const selected = await tauriOpen({
+      multiple: false,
+      directory: true,
+      recursive: false,
+      title: 'Select Genshin Impact installation path',
+    });
+
+    if (!selected) return;
+    const isInstalled = await tauriInvoke(TauriRoutes.EnsureInstallationPath, { path: selected as string })
+      .then(() => {
+        console.log('Installation path is valid');
+        return true;
+      })
+      .catch(() => false);
+
+    if (!isInstalled) {
+      setError('Invalid Installation Path');
+      return;
+    }
+
+    update('genshinImpactData', { path: selected as string });
+    setCurrentModal(null);
+  }
 
   async function changeInstallationPath() {
     const selected = await tauriOpen({
@@ -59,7 +87,7 @@ export default function FreshInstallModal({
     });
 
     if (!selected) return;
-    setInstallationPath((selected as string) + '/Genshin Impact');
+    setInstallationPath((selected as string) + '/game');
   }
 
   async function changeTempPath() {
@@ -130,6 +158,17 @@ export default function FreshInstallModal({
               className="cursor-pointer select-none bg-input-hover border-solid border-[1px] border-input-border text-white outline-none focus:outline-none w-full rounded-md p-2 mt-2"
               readOnly
             />
+          </div>
+          <div>
+            <p className="text-lg">Do you have the game installed?</p>
+            <p className="py-1 text-grey-five">
+              If you have the game installed, you can select the game's installation path. Otherwise, you can install
+              the game using this launcher.
+            </p>
+            {error && <p className="text-red-500">{error}</p>}
+            <Button onClick={alreadyInstalled} variant="accent" label="Greet" className={'!w-fit mt-2'}>
+              Select Installation Path
+            </Button>
           </div>
         </DialogFactualContent>
         <DialogFooter>

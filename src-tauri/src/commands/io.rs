@@ -10,7 +10,7 @@ pub fn find_installation_path() -> Result<Value, Value> {
 }
 
 #[tauri::command]
-pub fn ensure_installation_path(path: String) -> Result<String, Value> {
+pub fn ensure_installation_path(path: String) -> Result<Value, Value> {
     genshin_utils::ensure_installation_path(path).into()
 }
 

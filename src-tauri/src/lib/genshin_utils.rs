@@ -34,14 +34,17 @@ pub fn auto_detect_genshin_installation() -> Result<Value, Value> {
     }
 }
 
-pub fn ensure_installation_path(path: String) -> Result<String, Value> {
-    println!("ensure_installation_path: {}", &path);
+pub fn ensure_installation_path(path: String) -> Result<Value, Value> {
     let executable_path = format!("{}\\GenshinImpact.exe", &path);
+    info!(
+        "Checking if Genshin Impact is installed at: {}",
+        &executable_path
+    );
     if std::path::Path::new(&executable_path).exists() {
         let return_value = serde_json::json!({
             "path": &path,
         });
-        Ok(return_value.to_string())
+        Ok(return_value)
     } else {
         let return_value = serde_json::json!({
           "error": "Genshin Impact installation not found"
