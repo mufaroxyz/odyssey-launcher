@@ -8,6 +8,7 @@ import { open as tauriOpen } from '@tauri-apps/api/dialog';
 import useApplicationStore from '../../state/application-state';
 import { useShallow } from 'zustand/react/shallow';
 import { defaultInstallationContext } from '../../state/application-state.default';
+import Warning from '../../ui/warning';
 
 export default function FreshInstallModal({
   open,
@@ -108,6 +109,7 @@ export default function FreshInstallModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="min-w-[700px]">
         <DialogFactualContent className="text-white space-y-6">
+          <Warning text="Installation using this launcher may not work correctly. It is recommended to still use the original launcher for game installs/updates." />
           <div>
             <p className="text-lg">Installation path:</p>
             <input
