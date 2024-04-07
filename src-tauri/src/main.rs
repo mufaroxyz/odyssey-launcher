@@ -24,6 +24,7 @@ pub mod commands;
 pub mod game;
 pub mod installation;
 pub mod lib;
+pub mod traits;
 
 #[derive(Clone, Copy)]
 pub struct GameInstallingState {

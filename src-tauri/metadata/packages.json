@@ -1,0 +1,25 @@
+[
+  {
+    "name": "fps_unlocker",
+    "artifact_url": "github.com/mufaroxyz/genshin-fps-unlock-cli/releases/latest/download/unlockfps_nc.exe",
+    "description": "Unlock the FPS cap in Genshin Impact",
+    "configSchema": {
+      "AutoStart": true,
+      "AutoClose": true,
+      "PopupWindow": true,
+      "Fullscreen": false,
+      "UseCustomRes": false,
+      "IsExclusiveFullscreen": false,
+      "StartMinimized": false,
+      "UsePowerSave": false,
+      "SuspendLoad": false,
+      "UseMobileUI": false,
+      "FPSTarget": 144,
+      "CustomResX": 1920,
+      "CustomResY": 1080,
+      "MonitorNum": 1,
+      "Priority": 2,
+      "DllList": []
+    }
+  }
+]
