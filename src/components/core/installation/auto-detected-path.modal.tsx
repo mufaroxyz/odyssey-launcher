@@ -29,6 +29,7 @@ export default function AutoDetectedPathModal({
   }, [open]);
 
   function handleConfirm() {
+    // @ts-ignore
     update('genshinImpactData', { path });
     onOpenChange(false);
   }

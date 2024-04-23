@@ -1,0 +1,10 @@
+[
+  {
+    "name": "fps_unlocker",
+    "display_name": "FPS Unlocker",
+    "native": true,
+    "artifact": "",
+    "description": "Unlock the FPS cap in Genshin Impact",
+    "repository": "https://github.com/mufaroxyz/genshin-fps-unlock-cli"
+  }
+]

@@ -15,6 +15,7 @@ export interface ApplicationData {
   installationContext: InstallationContext;
   images: Images;
   screenshots: Screenshot[];
+  packages: Package[];
 }
 
 export interface ClearedApplicationData {
@@ -23,6 +24,7 @@ export interface ClearedApplicationData {
   installationContext: Pick<InstallationContext, keyof InstallationContext>;
   images: Pick<Images, keyof Images>;
   screenshots: Screenshot[];
+  packages: Package[];
 }
 
 export type ApplicationDataKeys = keyof (ApplicationData & object);
@@ -30,6 +32,7 @@ export type ApplicationDataAccessor = ApplicationData[ApplicationDataKeys];
 
 export interface GenshinImpactData {
   path: Path;
+  usedPackages: string[];
 }
 
 export type ApplicationSettings = {
@@ -86,6 +89,15 @@ export interface Images {
   adv: Advertisement;
   banner: Banner[];
   post: Post[];
+}
+
+export interface Package {
+  name: string;
+  display_name: string;
+  native: boolean;
+  artifact: string;
+  description: string;
+  repository: string;
 }
 
 export interface Screenshot extends string {}

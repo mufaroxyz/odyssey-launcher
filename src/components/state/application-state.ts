@@ -46,11 +46,17 @@ async function fetchData(initial: boolean = false) {
     screenshots = [];
   }
 
+  const packages = await tauriInvoke(TauriRoutes.GetPackagesList).catch((err) => {
+    console.error(err);
+    return [];
+  });
+
   return {
     applicationSettings,
     localGameManifest: localGameManifest,
     images,
     screenshots,
+    packages,
   };
 }
 
@@ -71,9 +77,9 @@ const useApplicationStore = create<ApplicationState>()((set, get) => ({
 
     await KvSettings.set(key, value);
 
-    set(() => ({
+    set((state: ApplicationState) => ({
       applicationSettings: {
-        ...get().applicationSettings,
+        ...state.applicationSettings,
         [key]: value,
       },
     }));
@@ -94,6 +100,7 @@ const useApplicationStore = create<ApplicationState>()((set, get) => ({
       return;
     }
     try {
+      await KvSettings.fillMissing();
       const data = await fetchData(true);
       // @ts-ignore
       set({ ...data, isLoaded: true });

@@ -17,6 +17,7 @@ export const defaultImages = {
 export const defaultApplicationSettings = {
   genshinImpactData: {
     path: '',
+    usedPackages: [],
   },
   playTime: 0,
   lastInstallationStep: 0,
@@ -37,10 +38,13 @@ export const defaultInstallationContext = {
   },
 };
 
+export const defaultPackages = [];
+
 export const defaultApplicationData = {
   applicationSettings: defaultApplicationSettings,
   localGameManifest: defaultLocalGameManifest,
   installationContext: defaultInstallationContext,
   images: defaultImages,
   screenshots: defaultScreenshots,
+  packages: defaultPackages,
 };

@@ -1,3 +1,5 @@
+use crate::lib::asset_manager;
+use crate::lib::asset_manager::Package;
 use crate::lib::game_manifests;
 use crate::lib::genshin_utils;
 
@@ -17,6 +19,11 @@ pub fn ensure_installation_path(path: String) -> Result<Value, Value> {
 #[tauri::command]
 pub fn fetch_local_manifest(path: String) -> Result<Value, Value> {
     game_manifests::fetch_local_manifest(path).into()
+}
+
+#[tauri::command]
+pub fn get_packages_list() -> Result<Vec<Package>, Value> {
+    asset_manager::AssetManager::get_packages_list()
 }
 
 #[tauri::command]

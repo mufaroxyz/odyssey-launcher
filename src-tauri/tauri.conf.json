@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "Odyssey Launcher",
-    "version": "0.0.8"
+    "version": "0.0.9"
   },
   "tauri": {
     "updater": {
@@ -76,6 +76,9 @@
       "icon": [
         "icons/icon.ico",
         "icons/icon.png"
+      ],
+      "externalBin": [
+        "binaries/odyssey-unlocker"
       ]
     },
     "systemTray": {

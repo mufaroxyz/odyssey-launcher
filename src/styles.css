@@ -72,6 +72,7 @@ body {
   --input: #252525;
   --input-border: #cdcdcd;
   --input-hover: #3b3b3b;
+  --component-base: #2f2f2f;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 
 export default function AnimationLayout() {
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       <Outlet />
     </AnimatePresence>
   );

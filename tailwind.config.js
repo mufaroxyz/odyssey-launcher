@@ -26,6 +26,9 @@ export default {
           hover: "var(--button-hover)",
           dark: "var(--button-dark)",
         },
+        component: {
+          DEFAULT: "var(--component-base)",
+        },
         input: {
           DEFAULT: "var(--input)",
           hover: "var(--input-hover)",
