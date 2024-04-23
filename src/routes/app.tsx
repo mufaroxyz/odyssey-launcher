@@ -75,6 +75,7 @@ function App() {
     if (applicationData.applicationSettings.genshinImpactData.path) {
       await invoke('start_game', {
         path: applicationData.applicationSettings.genshinImpactData.path,
+        useFpsUnlocker: applicationData.applicationSettings.genshinImpactData.usedPackages.includes('fps_unlocker'),
       });
       return;
     } else {

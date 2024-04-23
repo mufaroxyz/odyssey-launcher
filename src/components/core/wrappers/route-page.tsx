@@ -14,12 +14,18 @@ export default function RoutePage({
   if (backgroundImage) {
     return (
       <motion.div
-        initial={{ opacity: 0, x: 0 }}
+        initial={{ opacity: 0, scale: 0.9 }}
         animate={{
           opacity: 1,
-          x: 0,
+          scale: 1,
+          transition: {
+            duration: 2,
+            type: 'spring',
+            stiffness: 260,
+            damping: 20,
+          },
         }}
-        exit={{ opacity: 0, x: 20 }}
+        exit={{ opacity: 0 }}
         className={cn('flex-auto bg-bg-color rounded-tl-xl overflow-hidden relative', className)}
       >
         <motion.img
@@ -27,7 +33,7 @@ export default function RoutePage({
           animate={{
             scale: 1,
             transition: {
-              duration: 0.25,
+              duration: 5,
               type: 'spring',
               stiffness: 260,
               damping: 20,
@@ -46,9 +52,18 @@ export default function RoutePage({
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 20 }}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{
+        opacity: 1,
+        scale: 1,
+        transition: {
+          duration: 2,
+          type: 'spring',
+          stiffness: 260,
+          damping: 20,
+        },
+      }}
+      exit={{ opacity: 0, scale: 1.2, transition: { duration: 1 } }}
       className={cn('flex-auto h-full w-full flex bg-bg-color rounded-tl-xl overflow-hidden relative', className)}
     >
       {children}

@@ -242,6 +242,7 @@ export const InstallationScreen = ({
 
       const parsed = JSON.parse(paths);
 
+      // @ts-ignore
       update('genshinImpactData', {
         path: parsed.installationPath,
       });

@@ -7,6 +7,15 @@ use std::{
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Package {
+    pub name: String,
+    pub display_name: String,
+    pub native: bool,
+    pub description: String,
+    pub repository: String,
+}
+
 pub struct AssetManager {
     mhy_launcher_cdn_images: String,
     mhy_launcher_cdn_game_resources: String,
@@ -108,6 +117,15 @@ impl AssetManager {
         }
     }
 
+    pub fn get_packages_list() -> Result<Vec<Package>, Value> {
+        let packages = include_str!("../../metadata/packages.json");
+        let packages: Result<Vec<Package>, _> = serde_json::from_str(packages);
+
+        println!("{:?}", packages);
+
+        packages.map_err(|err| Value::String(err.to_string()))
+    }
+
     pub fn get_file_module_url(&self, path: &str) -> String {
         let current_dir = std::env::current_dir().unwrap();
         let current_dir = current_dir.to_str().unwrap();
@@ -126,7 +144,6 @@ impl AssetManager {
 
     pub fn fetch_images(&self) -> Images {
         let url = &self.mhy_launcher_cdn_images;
-        // make an get request to the url
 
         let response = reqwest::blocking::get(url).unwrap();
         let data = serde_json::from_str::<ReturnedImages>(&response.text().unwrap())

@@ -1,3 +1,4 @@
+import { defaultApplicationSettings } from '../components/state/application-state.default';
 import { Store } from './__STORE';
 import { ApplicationSettings } from './types';
 
@@ -33,14 +34,39 @@ export default abstract class KvSettings {
   static async createOrGetAll(): Promise<ApplicationSettings> {
     const settings = await KvSettings.getAll();
     if (Object.keys(settings).length === 0) {
-      await KvSettings.set('genshinImpactData', {
-        path: '',
-      });
+      await KvSettings.set('genshinImpactData', defaultApplicationSettings.genshinImpactData);
       await KvSettings.set('playTime', 0);
 
       await store.save();
     }
 
     return await KvSettings.getAll();
+  }
+
+  static async fillMissing() {
+    const defaultSettings = defaultApplicationSettings;
+    const currentSettings = await KvSettings.getAll();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function fillMissingSettings(defaultSettings: any, currentSettings: any): any {
+      for (const key in defaultSettings) {
+        if (!Object.prototype.hasOwnProperty.call(currentSettings, key)) {
+          currentSettings[key] = defaultSettings[key];
+        } else if (typeof defaultSettings[key] === 'object' && defaultSettings[key] !== null) {
+          currentSettings[key] = fillMissingSettings(defaultSettings[key], currentSettings[key]);
+        }
+      }
+      return currentSettings;
+    }
+
+    const filledSettings = fillMissingSettings(defaultSettings, currentSettings);
+
+    await KvSettings.saveAll(filledSettings);
+  }
+
+  static async saveAll(settings: ApplicationSettings) {
+    for (const key in settings) {
+      await KvSettings.set(key as SettingsKeys, settings[key as SettingsKeys]);
+    }
   }
 }

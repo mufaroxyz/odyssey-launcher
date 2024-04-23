@@ -1,4 +1,4 @@
-use std::{os::windows::process::CommandExt, sync::Arc};
+use std::{os::windows::process::CommandExt, string, sync::Arc};
 
 use discord_rich_presence::activity::{Activity, Assets, Timestamps};
 use log::info;
@@ -20,60 +20,98 @@ pub fn start_game(
     window: tauri::Window,
     app_handle: tauri::AppHandle,
     state: tauri::State<DiscordRPCState>,
+    use_fps_unlocker: bool,
 ) {
-    let command = "cmd";
+    let mut command = "cmd";
     let executable_path = format!("{}\\GenshinImpact.exe", &path);
-    let args = vec!["/C", &executable_path];
 
-    info!("Starting Genshin Impact at: {}", &executable_path);
+    let args = vec!["/C", &executable_path];
+    let mut arg = format!("/C {}", &executable_path);
+
+    let formatted_exe: String;
+    let new_path: String;
+    if use_fps_unlocker {
+        let current_exe = std::env::current_exe().unwrap();
+
+        formatted_exe = format!(
+            r"{}\odyssey-unlocker.exe",
+            &current_exe.parent().unwrap().to_str().unwrap()
+        );
+
+        arg = format!("location={}", &executable_path);
+
+        new_path = formatted_exe.clone();
+        command = &new_path;
+    }
+
+    info!(
+        "Starting Genshin Impact at: {} {} with args {}",
+        command, &executable_path, &arg
+    );
 
     let mut process = std::process::Command::new(command);
-    process.creation_flags(DETACHED_PROCESS);
-    process.args(args);
+    if use_fps_unlocker {
+        process.arg(&arg);
+    } else {
+        process.creation_flags(DETACHED_PROCESS);
+        process.args(args);
+    }
 
-    if let Ok(mut child) = process.spawn() {
-        window.hide().unwrap();
+    info!(
+        "Starting Genshin Impact, {:?}, {:?}",
+        process.get_program(),
+        process.get_args()
+    );
 
-        let asset = Assets::new()
-            .large_image("logo")
-            .large_text("Genshin Impact");
+    match process.spawn() {
+        Ok(child) => {
+            window.hide().unwrap();
 
-        let activity = Activity::new()
-            .state("In Game")
-            .details("Playing Genshin Impact")
-            .timestamps(
-                Timestamps::new().start(
-                    std::time::SystemTime::now()
-                        .duration_since(std::time::UNIX_EPOCH)
-                        .unwrap()
-                        .as_secs() as i64,
-                ),
-            )
-            .assets(asset);
+            let asset = Assets::new()
+                .large_image("logo")
+                .large_text("Genshin Impact");
 
-        let state_clone = Arc::clone(&state.0);
+            let activity = Activity::new()
+                .state("In Game")
+                .details("Playing Genshin Impact")
+                .timestamps(
+                    Timestamps::new().start(
+                        std::time::SystemTime::now()
+                            .duration_since(std::time::UNIX_EPOCH)
+                            .unwrap()
+                            .as_secs() as i64,
+                    ),
+                )
+                .assets(asset);
 
-        let mut state_guard = state.0.lock().unwrap();
-        let _ = state_guard.set_activity(activity);
+            let state_clone = Arc::clone(&state.0);
 
-        let start_time = std::time::Instant::now().clone();
-
-        std::thread::spawn(move || {
-            child.wait().unwrap();
-            let elapsed = start_time.elapsed().as_secs();
-
-            let activity = Activity::new().state("In Launcher").details("Home Screen");
-
-            let mut state_guard = state_clone.lock().unwrap();
+            let mut state_guard = state.0.lock().unwrap();
             let _ = state_guard.set_activity(activity);
 
-            app_handle
-                .emit_all("play-time", PlayTime { elapsed: elapsed })
-                .unwrap();
+            let start_time = std::time::Instant::now().clone();
 
-            window.show().unwrap();
-        });
-    } else {
-        println!("Error: Failed to start Genshin Impact");
+            std::thread::spawn(move || {
+                let output = child.wait_with_output().unwrap();
+                info!("Output: {}", String::from_utf8_lossy(&output.stdout));
+                info!("Errors: {}", String::from_utf8_lossy(&output.stderr));
+
+                let elapsed = start_time.elapsed().as_secs();
+
+                let activity = Activity::new().state("In Launcher").details("Home Screen");
+
+                let mut state_guard = state_clone.lock().unwrap();
+                let _ = state_guard.set_activity(activity);
+
+                app_handle
+                    .emit_all("play-time", PlayTime { elapsed: elapsed })
+                    .unwrap();
+
+                window.show().unwrap();
+            });
+        }
+        Err(e) => {
+            error!("Failed to start Genshin Impact: {:?}", e);
+        }
     }
 }

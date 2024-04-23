@@ -74,6 +74,7 @@ export default function FreshInstallModal({
       return;
     }
 
+    // @ts-ignore
     update('genshinImpactData', { path: selected as string });
     setCurrentModal(null);
   }

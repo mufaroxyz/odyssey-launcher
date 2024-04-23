@@ -94,6 +94,8 @@ fn main() {
     let discord_rpc = DiscordRPC::new();
     let asset_manager = AssetManager::new();
 
+    info!("Starting Tauri application");
+
     tauri::Builder::default()
         .system_tray(system_tray)
         .on_system_tray_event(|app, event| match event {
@@ -150,6 +152,7 @@ fn main() {
             commands::io::get_executable_path,
             commands::io::uninstall_game,
             commands::io::read_screenshots,
+            commands::io::get_packages_list,
             commands::application_executor::start_game,
             commands::assets::fetch_images,
             commands::installation::game_install,
